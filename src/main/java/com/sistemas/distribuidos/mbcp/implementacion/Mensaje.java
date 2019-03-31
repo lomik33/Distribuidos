@@ -25,9 +25,11 @@ public class Mensaje implements Serializable {
     private boolean enEspera;
 
     public Mensaje() {
+        Hmi= new ArrayList();
     }
 
     public Mensaje(int numeroMensaje, int k, int tk, String datos, ArrayList Hmi, boolean enEspera) {
+        super();
         this.numeroMensaje = numeroMensaje;
         this.k = k;
         this.tk = tk;
@@ -37,6 +39,7 @@ public class Mensaje implements Serializable {
     }
 
     public Mensaje(int numeroMensaje, int k, int tk, String datos) {
+           super();
         this.numeroMensaje = numeroMensaje;
         this.k = k;
         this.tk = tk;

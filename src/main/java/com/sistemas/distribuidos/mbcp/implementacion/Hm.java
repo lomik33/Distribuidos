@@ -5,11 +5,13 @@
  */
 package com.sistemas.distribuidos.mbcp.implementacion;
 
+import java.io.Serializable;
+
 /**
  *
  * @author lomik
  */
-public class Hm {
+public class Hm implements Serializable {
     
     private  int l;
     
