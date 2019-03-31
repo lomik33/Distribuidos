@@ -5,13 +5,18 @@
  */
 package com.sistemas.distribuidos.mbcp;
 
+import java.net.SocketException;
+
 /**
  *
  * @author lomik
  */
 public class Main {
     
-    public static void main(String[] args){
-        System.out.println("Hola mundo!!!!");
+    public static void main(String[] args) throws SocketException{
+      
+        UDPServer server= new UDPServer(6789);
+        server.listen();
+               
     }
 }
