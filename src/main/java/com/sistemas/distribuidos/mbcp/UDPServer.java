@@ -29,15 +29,20 @@ public class UDPServer {
     
     
     public void listen(){
-        
+        int numeroMensaje=0;
           while (true) {
               try {
                   System.out.println("Escuchando en puerto:"+socket.getPort());
+                  numeroMensaje++;
                   DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                   socket.receive(request);
                   System.out.println(request);
-                  DatagramPacket reply = new DatagramPacket(request.getData(),
-                          request.getLength(), request.getAddress(), request.getPort());
+                  
+                     String respuesta= new String(request.getData());
+                     respuesta="Respuesta: "+numeroMensaje+" "+respuesta;
+                   byte[]  respuestaBytes=respuesta.getBytes();
+                  DatagramPacket reply = new DatagramPacket(respuestaBytes,
+                          respuestaBytes.length, request.getAddress(), request.getPort());
                   socket.send(reply);
               } catch (IOException ex) {
                   Logger.getLogger(UDPServer.class.getName()).log(Level.SEVERE, null, ex);
