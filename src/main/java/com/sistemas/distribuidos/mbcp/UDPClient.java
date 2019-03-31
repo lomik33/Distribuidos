@@ -5,7 +5,10 @@
  */
 package com.sistemas.distribuidos.mbcp;
 
+import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -27,7 +30,7 @@ public class UDPClient {
      public UDPClient(String direccionHost,int serverPort) throws SocketException, UnknownHostException{
             socket = new DatagramSocket();
             //socket.setSoTimeout(puerto);
-            buffer = new byte[1000];
+            buffer = new byte[1024];
            servidor = InetAddress.getByName(direccionHost);
            this.serverPort=serverPort;
            
@@ -41,10 +44,28 @@ public class UDPClient {
          DatagramPacket request = new DatagramPacket(m, mensaje.length(), servidor, serverPort);
          socket.send(request);
          DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
-       socket.receive(reply);
-       centinela= new String(reply.getData());
-       System.out.println("Reply: " +centinela);
-       return centinela;
+        socket.receive(reply);
+        centinela= new String(reply.getData());
+        System.out.println("Reply: " +centinela);
+        return centinela;
+           
+     }
+     
+     public  String send(Mensaje mensaje) throws IOException{ 
+         String centinela="";
+         
+           
+           ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+           ObjectOutputStream os = new ObjectOutputStream(outputStream);
+           os.writeObject(mensaje);
+           byte[] data = outputStream.toByteArray();
+           DatagramPacket request = new DatagramPacket(data, data.length, servidor, serverPort);
+         socket.send(request);
+         DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+        socket.receive(reply);
+        centinela= new String(reply.getData());
+        System.out.println("Reply: " +centinela);
+        return centinela;
            
      }
      

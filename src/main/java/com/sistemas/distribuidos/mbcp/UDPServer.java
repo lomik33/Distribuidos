@@ -5,7 +5,10 @@
  */
 package com.sistemas.distribuidos.mbcp;
 
+import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -23,7 +26,7 @@ public class UDPServer {
     
     
     public UDPServer(int puerto) throws SocketException{
-        buffer= new byte[1000];
+        buffer= new byte[1024];
         socket= new DatagramSocket(puerto);        
     }
     
@@ -36,11 +39,28 @@ public class UDPServer {
                   numeroMensaje++;
                   DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                   socket.receive(request);
-                  System.out.println(request);
+               
+                  byte[] data = request.getData();
+ByteArrayInputStream in = new ByteArrayInputStream(data);
+ObjectInputStream is = new ObjectInputStream(in);
+Mensaje mensaje=null;
+try {
+ mensaje = (Mensaje) is.readObject();
+System.out.println("Mensaje recibido = "+mensaje);
+} catch (ClassNotFoundException e) {
+e.printStackTrace();
+}
+
                   
-                     String respuesta= new String(request.getData());
-                     respuesta="Respuesta: "+numeroMensaje+" "+respuesta;
+                  
+                  
+                  
+                  
+                  
+                  
+                     String respuesta= mensaje.toString();
                    byte[]  respuestaBytes=respuesta.getBytes();
+                      System.out.println(respuesta);
                   DatagramPacket reply = new DatagramPacket(respuestaBytes,
                           respuestaBytes.length, request.getAddress(), request.getPort());
                   socket.send(reply);

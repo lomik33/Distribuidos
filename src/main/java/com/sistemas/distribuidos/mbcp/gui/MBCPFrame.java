@@ -6,7 +6,10 @@
 package com.sistemas.distribuidos.mbcp.gui;
 
 import com.sistemas.distribuidos.mbcp.UDPClient;
+import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
@@ -37,6 +40,8 @@ public class MBCPFrame extends javax.swing.JFrame {
         btnEnviar = new javax.swing.JButton();
         txtMensaje = new javax.swing.JTextField();
         lblRespuesta = new javax.swing.JLabel();
+        txtPi = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -48,6 +53,15 @@ public class MBCPFrame extends javax.swing.JFrame {
         });
 
         lblRespuesta.setText("jLabel1");
+
+        txtPi.setText("1");
+        txtPi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPiActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("pi=");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -62,13 +76,22 @@ public class MBCPFrame extends javax.swing.JFrame {
                             .addComponent(txtMensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(133, 133, 133)
-                        .addComponent(lblRespuesta)))
+                        .addComponent(lblRespuesta))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPi, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(149, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(95, 95, 95)
+                .addGap(24, 24, 24)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtPi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addGap(51, 51, 51)
                 .addComponent(txtMensaje, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnEnviar)
@@ -80,12 +103,20 @@ public class MBCPFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private int numeroMensaje;
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
         try {
             // TODO add your handling code here:
-
+            numeroMensaje++;
+            int pi=Integer.parseInt(this.txtPi.getText());
+            Mensaje mensaje= new Mensaje(numeroMensaje,pi, numeroMensaje,this.txtMensaje.getText());
+            
+          
+        
+        
+            
             UDPClient client = new UDPClient("192.168.1.12", 6789);
-            String respuesta=client.send(this.txtMensaje.getText());
+            String respuesta=client.send(mensaje);
             this.lblRespuesta.setText(respuesta);
         } catch (SocketException ex) {
             Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -95,6 +126,10 @@ public class MBCPFrame extends javax.swing.JFrame {
             Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnEnviarActionPerformed
+
+    private void txtPiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPiActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPiActionPerformed
 
     /**
      * @param args the command line arguments
@@ -133,7 +168,9 @@ public class MBCPFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEnviar;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblRespuesta;
     private javax.swing.JTextField txtMensaje;
+    private javax.swing.JTextField txtPi;
     // End of variables declaration//GEN-END:variables
 }
