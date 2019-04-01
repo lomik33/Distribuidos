@@ -209,7 +209,7 @@ public class MBCPFrame extends javax.swing.JFrame {
             // TODO add your handling code here:
             numeroMensaje++;
             Mensaje mensaje = new Mensaje(numeroMensaje, procesoSeleccionado, numeroMensaje, mensajeStr);
-            UDPClient client = new UDPClient("192.168.1.12", puertoServidor);
+            UDPClient client = new UDPClient("localhost", puertoServidor);
             String respuesta = client.send(mensaje);
             this.mensajesEnviados.add(mensaje);
            String[] enviadosStr=new String[mensajesEnviados.size()];
