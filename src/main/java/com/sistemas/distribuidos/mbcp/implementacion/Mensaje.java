@@ -5,31 +5,28 @@
  */
 package com.sistemas.distribuidos.mbcp.implementacion;
 
-import java.awt.List;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
 
 /**
  *
  * @author lomik
  */
 public class Mensaje implements Serializable {
-    
+
     private int numeroMensaje;
-    private int k;  
-    private int tk;   
-    private String datos;  
-    private  ArrayList<Hm> Hmi;
+    private int k;
+    private int tk;
+    private String datos;
+    private ArrayList<Hm> Hmi;
     private boolean enEspera;
 
     public Mensaje() {
-        Hmi= new ArrayList();
+        Hmi = new ArrayList();
     }
 
     public Mensaje(int numeroMensaje, int k, int tk, String datos, ArrayList Hmi, boolean enEspera) {
-        super();
+        this();
         this.numeroMensaje = numeroMensaje;
         this.k = k;
         this.tk = tk;
@@ -39,7 +36,7 @@ public class Mensaje implements Serializable {
     }
 
     public Mensaje(int numeroMensaje, int k, int tk, String datos) {
-           super();
+        this();
         this.numeroMensaje = numeroMensaje;
         this.k = k;
         this.tk = tk;
@@ -49,16 +46,18 @@ public class Mensaje implements Serializable {
     @Override
     @SuppressWarnings("empty-statement")
     public String toString() {
-        String strhmi="{";
-        for(Hm hmi:Hmi){
-            strhmi+="("+hmi.getL()+","+hmi.getTl()+')';
+        String strhmi = "";
+        if (Hmi != null) {
+            strhmi = "{";
+            for (Hm hmi : Hmi) {
+                strhmi += "(" + hmi.getL() + "," + hmi.getTl() + ')';
+            }
+            strhmi += ')';
+        } else {
+            strhmi = "{\u2205}";
         }
-        strhmi+=')';
-            
-        return "m" +numeroMensaje +"(" +   ", k=" + k + ", tk=" + tk + ", datos=" + datos + ", Hmi=" + strhmi + '}';
-    }
-    
-    
 
-    
+        return "m" + numeroMensaje + "(" + "k=" + k + ", tk=" + tk + ", datos=" + datos + ", Hmi=" + strhmi + ')';
+    }
+
 }

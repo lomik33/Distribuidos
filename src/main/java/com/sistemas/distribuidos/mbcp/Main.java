@@ -5,6 +5,7 @@
  */
 package com.sistemas.distribuidos.mbcp;
 
+import com.sistemas.distribuidos.mbcp.gui.MBCPFrame;
 import java.net.SocketException;
 
 /**
@@ -14,9 +15,11 @@ import java.net.SocketException;
 public class Main {
     
     public static void main(String[] args) throws SocketException{
-      
-        UDPServer server= new UDPServer(6789);
-        server.listen();
+      java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new MBCPFrame().setVisible(true);
+            }
+        });
                
     }
 }
