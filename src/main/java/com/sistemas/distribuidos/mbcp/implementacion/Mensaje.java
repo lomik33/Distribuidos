@@ -60,4 +60,52 @@ public class Mensaje implements Serializable {
         return "m" + numeroMensaje + "(" + "k=" + k + ", tk=" + tk + ", datos=" + datos + ", Hmi=" + strhmi + ')';
     }
 
+    public int getNumeroMensaje() {
+        return numeroMensaje;
+    }
+
+    public void setNumeroMensaje(int numeroMensaje) {
+        this.numeroMensaje = numeroMensaje;
+    }
+
+    public int getK() {
+        return k;
+    }
+
+    public void setK(int k) {
+        this.k = k;
+    }
+
+    public int getTk() {
+        return tk;
+    }
+
+    public void setTk(int tk) {
+        this.tk = tk;
+    }
+
+    public String getDatos() {
+        return datos;
+    }
+
+    public void setDatos(String datos) {
+        this.datos = datos;
+    }
+
+    public ArrayList<Hm> getHmi() {
+        return Hmi;
+    }
+
+    public void setHmi(ArrayList<Hm> Hmi) {
+        this.Hmi = Hmi;
+    }
+
+    public boolean isEnEspera() {
+        return enEspera;
+    }
+
+    public void setEnEspera(boolean enEspera) {
+        this.enEspera = enEspera;
+    }
+
 }

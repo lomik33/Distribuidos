@@ -14,6 +14,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +27,7 @@ public class UDPServer implements Runnable {
     private DatagramSocket socket;
     private byte[] buffer;
     MensajeListen listener;
+    private HashMap<Integer, String> direcciones;
 
     private ArrayList<Mensaje> mensajesRecibidos;
     public UDPServer(int puerto, ArrayList<Mensaje> mensajesRecibidos, MensajeListen mensajelistener) throws SocketException {
@@ -34,14 +36,13 @@ public class UDPServer implements Runnable {
         System.out.println("Escuchando en puerto:" + puerto);
         this.mensajesRecibidos=mensajesRecibidos;
         listener=mensajelistener;
+        direcciones= new HashMap();
     }
 
     public void listen() {
-        int numeroMensaje = 0;
         while (true) {
             try {
 
-                numeroMensaje++;
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 socket.receive(request);
 
@@ -50,8 +51,12 @@ public class UDPServer implements Runnable {
                 ObjectInputStream is = new ObjectInputStream(in);
                 Mensaje mensaje = null;
                 try {
-                    mensaje = (Mensaje) is.readObject();
-                    System.out.println(mensaje + " de: " + request.getAddress() + ":" + request.getPort());
+                  mensaje = (Mensaje) is.readObject();
+                  
+                    if(!this.direcciones.containsKey(mensaje.getK()))
+                        this.direcciones.put(mensaje.getK(), request.getAddress().toString());
+                      
+                  System.out.println(mensaje + " de: " + request.getAddress() + ":" + request.getPort());
                     this.mensajesRecibidos.add(mensaje);
                     listener.agregarMensaje(mensaje);
                 } catch (ClassNotFoundException e) {
@@ -74,6 +79,14 @@ public class UDPServer implements Runnable {
     public void run() {
         listen();
 
+    }
+
+    public HashMap<Integer, String> getDirecciones() {
+        return direcciones;
+    }
+
+    public void setDirecciones(HashMap<Integer, String> direcciones) {
+        this.direcciones = direcciones;
     }
 
 }
