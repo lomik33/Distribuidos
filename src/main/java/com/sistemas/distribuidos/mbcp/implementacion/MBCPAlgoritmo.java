@@ -7,7 +7,6 @@ package com.sistemas.distribuidos.mbcp.implementacion;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -18,17 +17,17 @@ import javax.swing.JList;
  */
 public class MBCPAlgoritmo implements MensajeListen {
 
-    private int[] VTp;
-    private int numeroProceso;
-    private CopyOnWriteArrayList<Hm> CI;
+    private final int[] VTp;
+    private final int numeroProceso;
+    private final CopyOnWriteArrayList<Hm> CI;
     private int numeroMensaje;
-    private ArrayList<Mensaje> mensajesConstruidos;
+    private final ArrayList<Mensaje> mensajesConstruidos;
 
     public ArrayList<Mensaje> mensajesRecibidos;
-    javax.swing.JList<String> listMensajesRecibidos;
-    private CopyOnWriteArrayList<Mensaje> mensajesEnEspera;
-    javax.swing.JList<String> listmensajesEnEspera;
-    JLabel lblMbcp;
+    private final javax.swing.JList<String> listMensajesRecibidos;
+    private final CopyOnWriteArrayList<Mensaje> mensajesEnEspera;
+    private final  javax.swing.JList<String> listmensajesEnEspera;
+    private final JLabel lblMbcp;
 
     public MBCPAlgoritmo(int numeroProceso, JList<String> listMensajesRecibidos, JList<String> listMensajesEspera, JLabel lblMbcp) {
         this.VTp = new int[6];
@@ -210,12 +209,7 @@ public class MBCPAlgoritmo implements MensajeListen {
         return centinela;
     }
 
-    @Override
-    public void agregaEnEspera() {
-        //for (Mensaje m : this.mensajesEnEspera) {
-        //  agregarMensaje(m);
-        // }
-    }
+  
 
     public int getIndexEspera(Mensaje mensaje) {
         int centinela = -1;

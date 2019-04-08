@@ -34,7 +34,7 @@ public class Mensaje implements Serializable {
         this.k = k;
         this.tk = tk;
         this.datos = datos;
-        this.Hmi=ci;
+        this.Hmi.addAll(ci);
     }
 
     @Override

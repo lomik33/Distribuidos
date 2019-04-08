@@ -74,7 +74,6 @@ public class UDPServer implements Runnable {
                         this.direcciones.put(mensaje.getK(), request.getAddress().toString());
                     }                   
                     listener.agregarMensaje(mensaje);
-                    listener.agregaEnEspera();
                     
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
