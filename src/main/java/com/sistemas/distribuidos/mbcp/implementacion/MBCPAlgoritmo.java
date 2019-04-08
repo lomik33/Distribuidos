@@ -162,13 +162,15 @@ public class MBCPAlgoritmo implements MensajeListen {
                 for (Mensaje m : this.mensajesEnEspera) {
                     if (m.getK() == mensaje.getK() && m.getTk() == mensaje.getTk()) {
                         this.mensajesEnEspera.remove(m);
-                    }else
+                    } else {
                         agregarMensaje(m);
+                    }
                 }
 
             } else {
-                if(this.getIndexEspera(mensaje)==-1)
-                     this.mensajesEnEspera.add(mensaje);
+                if (this.getIndexEspera(mensaje) == -1) {
+                    this.mensajesEnEspera.add(mensaje);
+                }
             }
 
 //            this.mensajesRecibidos.add(mensaje);
@@ -211,21 +213,20 @@ public class MBCPAlgoritmo implements MensajeListen {
     @Override
     public void agregaEnEspera() {
         //for (Mensaje m : this.mensajesEnEspera) {
-          //  agregarMensaje(m);
-       // }
+        //  agregarMensaje(m);
+        // }
     }
-    
-    
-    public int getIndexEspera(Mensaje mensaje){
-        int centinela=-1;
-        int index=0;
-         for (Mensaje m : this.mensajesEnEspera) {
-                    if (m.getK() == mensaje.getK() && m.getTk() == mensaje.getTk()) {
-centinela=index;
-                    }
-                    index++;
-                }
-         return centinela;
+
+    public int getIndexEspera(Mensaje mensaje) {
+        int centinela = -1;
+        int index = 0;
+        for (Mensaje m : this.mensajesEnEspera) {
+            if (m.getK() == mensaje.getK() && m.getTk() == mensaje.getTk()) {
+                centinela = index;
+            }
+            index++;
+        }
+        return centinela;
 
     }
 }
