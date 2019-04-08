@@ -7,6 +7,8 @@ package com.sistemas.distribuidos.mbcp.implementacion;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
@@ -18,29 +20,21 @@ public class Mensaje implements Serializable {
     private int k;
     private int tk;
     private String datos;
-    private ArrayList<Hm> Hmi;
+    private CopyOnWriteArrayList<Hm> Hmi;
     private boolean enEspera;
 
     public Mensaje() {
-        Hmi = new ArrayList();
+        Hmi = new CopyOnWriteArrayList();
     }
 
-    public Mensaje(int numeroMensaje, int k, int tk, String datos, ArrayList Hmi, boolean enEspera) {
+
+    public Mensaje(int numeroMensaje, int k, int tk, String datos, CopyOnWriteArrayList<Hm> ci) {
         this();
         this.numeroMensaje = numeroMensaje;
         this.k = k;
         this.tk = tk;
         this.datos = datos;
-        this.Hmi = Hmi;
-        this.enEspera = enEspera;
-    }
-
-    public Mensaje(int numeroMensaje, int k, int tk, String datos) {
-        this();
-        this.numeroMensaje = numeroMensaje;
-        this.k = k;
-        this.tk = tk;
-        this.datos = datos;
+        this.Hmi=ci;
     }
 
     @Override
@@ -57,7 +51,7 @@ public class Mensaje implements Serializable {
             strhmi = "{\u2205}";
         }
 
-        return "m" + numeroMensaje + "(" + "k=" + k + ", tk=" + tk + ", datos=" + datos + ", Hmi=" + strhmi + ')';
+        return "m" + numeroMensaje + "(" + "k=" + k + ", tk=" + tk + ", datos=\"" + datos + "\", Hmi=" + strhmi + ')';
     }
 
     public int getNumeroMensaje() {
@@ -92,11 +86,11 @@ public class Mensaje implements Serializable {
         this.datos = datos;
     }
 
-    public ArrayList<Hm> getHmi() {
+    public CopyOnWriteArrayList<Hm> getHmi() {
         return Hmi;
     }
 
-    public void setHmi(ArrayList<Hm> Hmi) {
+    public void setHmi(CopyOnWriteArrayList<Hm> Hmi) {
         this.Hmi = Hmi;
     }
 

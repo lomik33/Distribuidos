@@ -11,5 +11,6 @@ package com.sistemas.distribuidos.mbcp.implementacion;
  */
 public interface MensajeListen {
     
-    public void agregarMensaje(Mensaje mensaje);
+    public boolean agregarMensaje(Mensaje mensaje);
+    public void agregaEnEspera();
 }

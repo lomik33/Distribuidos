@@ -23,7 +23,7 @@ public class UDPClient {
     
      private  DatagramSocket socket;
      private byte[] buffer;
-     InetAddress servidor;
+     private InetAddress servidor;
      int serverPort;
      
      
@@ -72,5 +72,11 @@ public class UDPClient {
      private void close(){
          this.socket.close();
      }
+
+    public DatagramSocket getSocket() {
+        return socket;
+    }
     
+     
+     
 }

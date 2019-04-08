@@ -7,15 +7,14 @@ package com.sistemas.distribuidos.mbcp.gui;
 
 import com.sistemas.distribuidos.mbcp.UDPClient;
 import com.sistemas.distribuidos.mbcp.UDPServer;
+import com.sistemas.distribuidos.mbcp.implementacion.MBCPAlgoritmo;
 import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
-import com.sistemas.distribuidos.mbcp.implementacion.MensajeListen;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 
 /**
@@ -24,12 +23,23 @@ import javax.swing.JOptionPane;
  */
 public class MBCPFrame extends javax.swing.JFrame {
 
+    private int procesoSeleccionado;
+    private final int puertoInicial = 6788;
+   
+    private Thread threadReceive;
+    private UDPServer udpServer;
+    private Mensaje mensajeSeleccionado;
+    private final ArrayList<MensajeEnviado> mensajesEnviados;
+    private MBCPAlgoritmo mbcp = null;
+
     /**
      * Creates new form MBCPFrame
      */
     public MBCPFrame() {
-        this.listener = new MensajeRecibidoListener(listMensajesRecibidos);
+      
         initComponents();
+        this.habilitarSeccionConstruccion(false);
+        this.mensajesEnviados = new ArrayList<>();
     }
 
     /**
@@ -61,6 +71,9 @@ public class MBCPFrame extends javax.swing.JFrame {
         lblFifo = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         listFifo = new javax.swing.JList<>();
+        btnCrearMensaje = new javax.swing.JButton();
+        lblMensajeSeleccionado = new javax.swing.JLabel();
+        lblMbcp = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -71,7 +84,7 @@ public class MBCPFrame extends javax.swing.JFrame {
             }
         });
 
-        lblRespuesta.setText("MENSAJES ENVIADOS");
+        lblRespuesta.setText("MENSAJES CONSTRUIDOS");
 
         lblSeleccionarProceso.setText("SELECCIONE UN PROCESO");
 
@@ -82,10 +95,15 @@ public class MBCPFrame extends javax.swing.JFrame {
             }
         });
 
-        lblEstatus.setText("Estado");
+        lblEstatus.setText("ESCRIBE MENSAJE");
 
         comboProcesos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PROCESO 1", "PROCESO 2", "PROCESO 3", "PROCESO 4", "PROCESO 5", "PROCESO 6" }));
 
+        listMensajesEnviados.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listMensajesEnviadosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(listMensajesEnviados);
 
         btnEnviarProceso2.setText("Enviar Proceso 2");
@@ -132,14 +150,22 @@ public class MBCPFrame extends javax.swing.JFrame {
 
         jScrollPane3.setViewportView(listFifo);
 
+        btnCrearMensaje.setText("Crear Mensaje");
+        btnCrearMensaje.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCrearMensajeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtMensaje)
-                    .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lblMbcp, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtMensaje, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnEnviarProceso1)
@@ -159,7 +185,7 @@ public class MBCPFrame extends javax.swing.JFrame {
                                 .addComponent(btnEnviarProceso5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnEnviarProceso6))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblEstatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
@@ -170,17 +196,23 @@ public class MBCPFrame extends javax.swing.JFrame {
                                 .addComponent(btnLanzar)
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addGap(240, 240, 240))
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblFifo, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addComponent(jScrollPane3)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblFifo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(lblMensajeSeleccionado, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
+                                    .addComponent(btnCrearMensaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -191,10 +223,12 @@ public class MBCPFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(comboProcesos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnLanzar))
-                .addGap(7, 7, 7)
+                .addGap(29, 29, 29)
                 .addComponent(lblEstatus)
-                .addGap(28, 28, 28)
-                .addComponent(txtMensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtMensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCrearMensaje))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEnviarProceso1)
@@ -202,8 +236,11 @@ public class MBCPFrame extends javax.swing.JFrame {
                     .addComponent(btnEnviarProceso3)
                     .addComponent(btnEnviarProceso4)
                     .addComponent(btnEnviarProceso5)
-                    .addComponent(btnEnviarProceso6))
-                .addGap(18, 18, 18)
+                    .addComponent(btnEnviarProceso6)
+                    .addComponent(lblMensajeSeleccionado))
+                .addGap(2, 2, 2)
+                .addComponent(lblMbcp)
+                .addGap(2, 2, 2)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblRespuesta)
                     .addComponent(lblRespuesta1)
@@ -213,7 +250,7 @@ public class MBCPFrame extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
                     .addComponent(jScrollPane3))
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
         pack();
@@ -221,88 +258,40 @@ public class MBCPFrame extends javax.swing.JFrame {
 
 
     private void btnEnviarProceso1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarProceso1ActionPerformed
-        this.enviarMensaje(1, procesoSeleccionado, puertoInicial + 1, this.txtMensaje.getText());
-    }//GEN-LAST:event_btnEnviarProceso1ActionPerformed
-
-    private void enviarMensaje(int procesoDestino, int procesoSeleccionado, int puertoServidor, String mensajeStr) {
-        try {
+        //this.enviarMensaje(1, procesoSeleccionado, puertoInicial + 1, this.txtMensaje.getText());
+         try {
             // TODO add your handling code here:
-            numeroMensaje++;
-            Mensaje mensaje = new Mensaje(numeroMensaje, procesoSeleccionado, numeroMensaje, mensajeStr);
-            String direccion = this.udpServer.getDirecciones().get(procesoDestino);
-            if (direccion.equals("")) {
-                JOptionPane.showMessageDialog(null, "No se conoce la direeccion logica del proceso porque aun no se han recibido mensajes");
-            } else {
-                UDPClient client = new UDPClient(direccion, puertoServidor);
-                String respuesta = client.send(mensaje);
-                this.mensajesEnviados.add(mensaje);
-                String[] enviadosStr = new String[mensajesEnviados.size()];
-                int i = 0;
-                for (Mensaje m : mensajesEnviados) {
-                    enviadosStr[i] = m.toString();
-                    i++;
-                }
-                this.listMensajesEnviados.setListData((String[]) enviadosStr);
-                this.lblRespuesta.setText(respuesta);
-            }
-        } catch (SocketException ex) {
-            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+
+            this.prepararEnvio(1, puertoInicial + 1);
         } catch (UnknownHostException ex) {
             Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    private int procesoSeleccionado;
-    private int puertoInicial = 6788;
-    private MensajeRecibidoListener listener;
-    private Thread threadReceive;
-    private UDPServer udpServer;
-    private int numeroMensaje;
-    private ArrayList<Mensaje> mensajesEnviados = new ArrayList();
-    private ArrayList<Mensaje> mensajesRecibidos = new ArrayList();
+    }//GEN-LAST:event_btnEnviarProceso1ActionPerformed
 
+
+    /***
+     * Metodo que corre el servidor en un puerto inicial 6788 se incrementa el numero de proceso que sea
+     * por ejemplo 6788+1 (en caso de ser proceso uno)
+     * @param evt 
+     */
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
         try {
-            listener = new MensajeRecibidoListener(listMensajesRecibidos);
             procesoSeleccionado = (this.comboProcesos.getSelectedIndex() + 1);
+            this.mbcp = new MBCPAlgoritmo(procesoSeleccionado,this.listMensajesRecibidos,this.listFifo,this.lblMbcp);
+      
             int puertoProceso = puertoInicial + (procesoSeleccionado);
-            udpServer = new UDPServer(puertoProceso, this.mensajesRecibidos, this.listener);
+            udpServer = new UDPServer(puertoProceso, this.mbcp.mensajesRecibidos, this.mbcp,true);
             // TODO add your handling code here:
             threadReceive = new Thread(udpServer);
             threadReceive.start();
             this.lblSeleccionarProceso.setText(this.comboProcesos.getSelectedItem().toString() + " INICIADO EN PUERTO:" + puertoProceso);
             this.btnLanzar.setEnabled(false);
-
-            switch (procesoSeleccionado) {
-                case 1:
-                    this.btnEnviarProceso1.setEnabled(false);
-                    break;
-                case 2:
-                    this.btnEnviarProceso2.setEnabled(false);
-
-                    break;
-
-                case 3:
-                    this.btnEnviarProceso3.setEnabled(false);
-                    break;
-
-                case 4:
-                    this.btnEnviarProceso4.setEnabled(false);
-
-                    break;
-
-                case 5:
-                    this.btnEnviarProceso5.setEnabled(false);
-
-                    break;
-
-                case 6:
-                    this.btnEnviarProceso6.setEnabled(false);
-
-                    break;
-
-            }
+            this.habilitarSeccionConstruccion(true);
+            this.comboProcesos.setEnabled(false);
+            this.habilitaBotonesEnvio(false);
+            this.lblMbcp.setText(this.mbcp.toString());
 
         } catch (SocketException ex) {
             Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -310,67 +299,221 @@ public class MBCPFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLanzarActionPerformed
 
     private void btnEnviarProceso2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarProceso2ActionPerformed
-        // TODO add your handling code here:
-        this.enviarMensaje(2,procesoSeleccionado, puertoInicial + 2, this.txtMensaje.getText());
+        try {
+            // TODO add your handling code here:
+
+            this.prepararEnvio(2, puertoInicial + 2);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }//GEN-LAST:event_btnEnviarProceso2ActionPerformed
 
     private void btnEnviarProceso3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarProceso3ActionPerformed
         // TODO add your handling code here:
-        this.enviarMensaje(3,procesoSeleccionado, puertoInicial + 3, this.txtMensaje.getText());
+        //this.enviarMensaje(3,procesoSeleccionado, puertoInicial + 3, this.txtMensaje.getText());
+         try {
+            // TODO add your handling code here:
+
+            this.prepararEnvio(3, puertoInicial + 3);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnEnviarProceso3ActionPerformed
 
     private void btnEnviarProceso4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarProceso4ActionPerformed
         // TODO add your handling code here:
-        this.enviarMensaje(4,procesoSeleccionado, puertoInicial + 4, this.txtMensaje.getText());
+        //this.enviarMensaje(4,procesoSeleccionado, puertoInicial + 4, this.txtMensaje.getText());
+         try {
+            // TODO add your handling code here:
+
+            this.prepararEnvio(4, puertoInicial + 4);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnEnviarProceso4ActionPerformed
 
     private void btnEnviarProceso5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarProceso5ActionPerformed
         // TODO add your handling code here:
-        this.enviarMensaje(5,procesoSeleccionado, puertoInicial + 5, this.txtMensaje.getText());
+        //this.enviarMensaje(5,procesoSeleccionado, puertoInicial + 5, this.txtMensaje.getText());
+         try {
+            // TODO add your handling code here:
+
+            this.prepararEnvio(5, puertoInicial + 5);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnEnviarProceso5ActionPerformed
 
     private void btnEnviarProceso6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarProceso6ActionPerformed
         // TODO add your handling code here:
-        this.enviarMensaje(6,procesoSeleccionado, puertoInicial + 6, this.txtMensaje.getText());
+        //this.enviarMensaje(6,procesoSeleccionado, puertoInicial + 6, this.txtMensaje.getText());
+         try {
+            // TODO add your handling code here:
+
+            this.prepararEnvio(6, puertoInicial + 6);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnEnviarProceso6ActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+    private boolean existeMensajeEnviado(int procesoDestino) {
+        boolean existe = false;
+        for (MensajeEnviado mensajeEnviado : this.mensajesEnviados) {
+            if (mensajeEnviado.getProceso() == procesoDestino
+                    && mensajeEnviado.mensaje.getK() == mensajeSeleccionado.getK()
+                    && mensajeEnviado.mensaje.getTk() == mensajeSeleccionado.getTk()) {
+                existe = true;
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MBCPFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MBCPFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MBCPFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MBCPFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MBCPFrame().setVisible(true);
-            }
-        });
+        return existe;
     }
 
+    private void habilitaBotonesEnvio(boolean enabled) {
+
+        this.btnEnviarProceso1.setEnabled(enabled);
+        this.btnEnviarProceso2.setEnabled(enabled);
+        this.btnEnviarProceso3.setEnabled(enabled);
+        this.btnEnviarProceso4.setEnabled(enabled);
+        this.btnEnviarProceso5.setEnabled(enabled);
+        this.btnEnviarProceso6.setEnabled(enabled);
+        switch (procesoSeleccionado) {
+            case 1:
+                this.btnEnviarProceso1.setEnabled(false);
+
+                break;
+            case 2:
+                this.btnEnviarProceso2.setEnabled(false);
+
+                break;
+
+            case 3:
+                this.btnEnviarProceso3.setEnabled(false);
+                break;
+
+            case 4:
+                this.btnEnviarProceso4.setEnabled(false);
+                break;
+
+            case 5:
+                this.btnEnviarProceso5.setEnabled(false);
+
+                break;
+
+            case 6:
+                this.btnEnviarProceso6.setEnabled(false);
+
+                break;
+
+        }
+    }
+
+    private void prepararEnvio(int procesoDestino, int puertoServidor) throws SocketException, UnknownHostException, IOException {
+
+        if (this.mensajeSeleccionado == null) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un mensaje para poder enviarlo al proceso.");
+        } else {
+            if (this.existeMensajeEnviado(procesoDestino)) {
+                JOptionPane.showMessageDialog(this, "El mensaje ya fue enviado al proceso");
+            } else {
+
+                String direccion = this.udpServer.getDirecciones().get(procesoDestino);
+                if (direccion.equals("")) {
+                    JOptionPane.showMessageDialog(null, "No se conoce la direeccion logica del proceso porque aun no se han recibido mensajes");
+                } else {
+                    UDPClient client = new UDPClient(direccion, puertoServidor);
+                    String respuesta = client.send(this.mensajeSeleccionado);
+                    if (respuesta != null) {
+                        this.mensajesEnviados.add(new MensajeEnviado(procesoDestino, this.mensajeSeleccionado));
+                        this.lblMbcp.setText(this.mbcp.toString());
+                    }
+                }
+
+            }
+        }
+    }
+    private void btnCrearMensajeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearMensajeActionPerformed
+        // TODO add your handling code here:
+        Mensaje mensaje = this.mbcp.construirMensaje(this.txtMensaje.getText());
+        this.listMensajesEnviados.setListData((String[]) this.mbcp.getListConstruidos());
+        this.lblMensajeSeleccionado.setText(mensaje.toString());
+         this.lblMbcp.setText(this.mbcp.toString());
+    }//GEN-LAST:event_btnCrearMensajeActionPerformed
+
+    private void listMensajesEnviadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listMensajesEnviadosMouseClicked
+        // TODO add your handling code here:
+        int indiceSeleccionado = this.listMensajesEnviados.getSelectedIndex();
+
+        if (indiceSeleccionado >= 0) {
+            mensajeSeleccionado = this.mbcp.getMensajesConstruidos().get(indiceSeleccionado);
+            if (mensajeSeleccionado != null) {
+                this.lblMensajeSeleccionado.setText(mensajeSeleccionado.toString());
+                //Consulto si ese mensaje ya fue enviado a cada proceso si ya entonces deshabilito el boton
+                this.habilitaBotonesEnvio(true);
+                for (int i = 1; i <= 6; i++) {
+                    boolean existe = this.existeMensajeEnviado(i);
+                    if (existe) {
+                        switch (i) {
+                            case 1:
+                                this.btnEnviarProceso1.setEnabled(false);
+                                break;
+                            case 2:
+                                this.btnEnviarProceso2.setEnabled(false);
+                                break;
+                            case 3:
+                                this.btnEnviarProceso3.setEnabled(false);
+                                break;
+                            case 4:
+                                this.btnEnviarProceso4.setEnabled(false);
+                                break;
+                            case 5:
+                                this.btnEnviarProceso5.setEnabled(false);
+                                break;
+                            case 6:
+                                this.btnEnviarProceso6.setEnabled(false);
+                                break;
+                        }
+                    }
+                }
+
+            }
+        }
+        //JOptionPane.showMessageDialog(this,"El index seleccionado es "+this.listMensajesEnviados.getSelectedIndex());
+
+    }//GEN-LAST:event_listMensajesEnviadosMouseClicked
+
+    /**
+     * *
+     * Método que habilita o deshabilita la interfaz para envio de mensajes
+     *
+     * @param enabled
+     */
+    private void habilitarSeccionConstruccion(boolean enabled) {
+        this.btnEnviarProceso1.setEnabled(enabled);
+        this.btnEnviarProceso2.setEnabled(enabled);
+        this.btnEnviarProceso3.setEnabled(enabled);
+        this.btnEnviarProceso4.setEnabled(enabled);
+        this.btnEnviarProceso5.setEnabled(enabled);
+        this.btnEnviarProceso6.setEnabled(enabled);
+        this.btnCrearMensaje.setEnabled(enabled);
+        this.listMensajesEnviados.setEnabled(enabled);
+        this.listMensajesRecibidos.setEnabled(enabled);
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCrearMensaje;
     private javax.swing.JButton btnEnviarProceso1;
     private javax.swing.JButton btnEnviarProceso2;
     private javax.swing.JButton btnEnviarProceso3;
@@ -384,6 +527,8 @@ public class MBCPFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lblEstatus;
     private javax.swing.JLabel lblFifo;
+    private javax.swing.JLabel lblMbcp;
+    private javax.swing.JLabel lblMensajeSeleccionado;
     private javax.swing.JLabel lblRespuesta;
     private javax.swing.JLabel lblRespuesta1;
     private javax.swing.JLabel lblSeleccionarProceso;
@@ -394,33 +539,37 @@ public class MBCPFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 }
 
-class MensajeRecibidoListener implements MensajeListen {
 
-    ArrayList<Mensaje> recibidos;
+/**
+ * *
+ * Clase para mantener un historial de los mensajes que ya fueron enviados
+ *
+ * @author lomik
+ */
+class MensajeEnviado {
 
-    javax.swing.JList<String> listMensajesRecibidos;
+    int proceso;
+    Mensaje mensaje;
 
-    public MensajeRecibidoListener() {
-        recibidos = new ArrayList();
+    public int getProceso() {
+        return proceso;
     }
 
-    @Override
-    public void agregarMensaje(Mensaje mensaje) {
-        recibidos.add(mensaje);
-
-        String[] enviadosStr = new String[recibidos.size()];
-        int i = 0;
-        for (Mensaje m : recibidos) {
-            enviadosStr[i] = m.toString();
-            i++;
-        }
-        this.listMensajesRecibidos.setListData((String[]) enviadosStr);
-
+    public void setProceso(int proceso) {
+        this.proceso = proceso;
     }
 
-    public MensajeRecibidoListener(JList<String> listMensajesRecibidos) {
-        this();
-        this.listMensajesRecibidos = listMensajesRecibidos;
+    public Mensaje getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(Mensaje mensaje) {
+        this.mensaje = mensaje;
+    }
+
+    public MensajeEnviado(int proceso, Mensaje mensaje) {
+        this.proceso = proceso;
+        this.mensaje = mensaje;
     }
 
 }

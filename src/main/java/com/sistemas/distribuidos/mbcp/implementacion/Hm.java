@@ -6,6 +6,8 @@
 package com.sistemas.distribuidos.mbcp.implementacion;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
@@ -38,4 +40,18 @@ public class Hm implements Serializable {
         this.tl = tl;
     }
     
+   public static String toStringHm(CopyOnWriteArrayList<Hm> Hmi){
+        String strhmi = "";
+        if (Hmi != null) {
+            strhmi = "{";
+            for (Hm hmi : Hmi) {
+                strhmi += "(" + hmi.getL() + "," + hmi.getTl() + ')';
+            }
+            strhmi += ')';
+        } else {
+            strhmi = "{(vacio)}";
+        }
+        
+        return strhmi;
+   }
 }
