@@ -16,17 +16,20 @@ import javax.swing.JList;
  * @author lomik
  */
 public class MBCPAlgoritmo implements MensajeListen {
-
-    private final int[] VTp;
+ 
+    //Variables del pseudocodigo
     private final int numeroProceso;
+    private final int[] VTp;   
     private final CopyOnWriteArrayList<Hm> CI;
-    private int numeroMensaje;
-    private final ArrayList<Mensaje> mensajesConstruidos;
-
-    public ArrayList<Mensaje> mensajesRecibidos;
-    private final javax.swing.JList<String> listMensajesRecibidos;
+   
+    private final ArrayList<Mensaje> mensajesConstruidos;  
+    public ArrayList<Mensaje> mensajesRecibidos;    
     private final CopyOnWriteArrayList<Mensaje> mensajesEnEspera;
-    private final  javax.swing.JList<String> listmensajesEnEspera;
+    private int numeroMensaje;
+ 
+    
+    private final javax.swing.JList<String> listMensajesRecibidos;
+    private final javax.swing.JList<String> listMensajesEnEspera;
     private final JLabel lblMbcp;
 
     public MBCPAlgoritmo(int numeroProceso, JList<String> listMensajesRecibidos, JList<String> listMensajesEspera, JLabel lblMbcp) {
@@ -39,7 +42,7 @@ public class MBCPAlgoritmo implements MensajeListen {
         this.listMensajesRecibidos = listMensajesRecibidos;
         this.lblMbcp = lblMbcp;
         this.mensajesEnEspera = new CopyOnWriteArrayList();
-        this.listmensajesEnEspera = listMensajesEspera;
+        this.listMensajesEnEspera = listMensajesEspera;
 
     }
 
@@ -188,7 +191,7 @@ public class MBCPAlgoritmo implements MensajeListen {
                 i++;
             }
 
-            this.listmensajesEnEspera.setListData((String[]) esperaStr);
+            this.listMensajesEnEspera.setListData((String[]) esperaStr);
             this.lblMbcp.setText(this.toString());
         }
 
