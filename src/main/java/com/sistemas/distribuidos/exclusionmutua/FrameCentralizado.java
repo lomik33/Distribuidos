@@ -124,7 +124,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
         procesoSeleccionado = (this.comboProcesos.getSelectedIndex() + 1);
         int puertoProceso = puertoInicial + (procesoSeleccionado);
         try {
-            udpServer = new UDPServer(puertoProceso, this.centralizadoMutex.mensajesRecibidos, this.centralizadoMutex,true);
+            udpServer = new UDPServer(puertoProceso, this.centralizadoMutex.mensajesRecibidos, this.centralizadoMutex,false);
         } catch (SocketException ex) {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
         }
