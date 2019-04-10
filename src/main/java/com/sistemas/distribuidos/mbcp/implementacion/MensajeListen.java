@@ -10,6 +10,10 @@ package com.sistemas.distribuidos.mbcp.implementacion;
  * @author lomik
  */
 public interface MensajeListen {
-    
-    public boolean agregarMensaje(Mensaje mensaje);
+    /**
+     * primitiva receive que permite capturar mensajes que vienen desde los procesos en el sistema distribuido
+     * @param mensaje
+     * @return 
+     */
+    public boolean recibirMensaje(Mensaje mensaje);
 }

@@ -27,33 +27,17 @@ public class UDPServer implements Runnable {
     private DatagramSocket socket;
     private byte[] buffer;
     MensajeListen listener;
-    private HashMap<Integer, String> direcciones;
+  
 
     private ArrayList<Mensaje> mensajesRecibidos;
 
-    public UDPServer(int puerto, ArrayList<Mensaje> mensajesRecibidos, MensajeListen mensajelistener, boolean isLocalhost) throws SocketException {
+    public UDPServer(int puerto, ArrayList<Mensaje> mensajesRecibidos, MensajeListen mensajelistener) throws SocketException {
         buffer = new byte[1024];
         socket = new DatagramSocket(puerto);
         System.out.println("Escuchando en puerto:" + puerto);
         this.mensajesRecibidos = mensajesRecibidos;
         listener = mensajelistener;
-        direcciones = new HashMap();
-        if (isLocalhost) {
-            direcciones.put(1, "localhost");
-            direcciones.put(2, "localhost");
-            direcciones.put(3, "localhost");
-            direcciones.put(4, "localhost");
-            direcciones.put(5, "localhost");
-            direcciones.put(6, "localhost");
-        } else {
-            direcciones.put(1, "192.168.1.17");
-            direcciones.put(2, "192.168.1.17");
-            direcciones.put(3, "192.168.1.17");
-            direcciones.put(4, "192.168.1.12");
-            direcciones.put(5, "192.168.1.12");
-            direcciones.put(6, "192.168.1.12");
-        }
-
+       
     }
 
     public void listen() {
@@ -69,10 +53,8 @@ public class UDPServer implements Runnable {
                 Mensaje mensaje = null;
                 try {
                     mensaje = (Mensaje) is.readObject();
-                    if (!this.direcciones.containsKey(mensaje.getK())) {
-                        this.direcciones.put(mensaje.getK(), request.getAddress().toString());
-                    }
-                    listener.agregarMensaje(mensaje);
+                   
+                    listener.recibirMensaje(mensaje);
 
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
@@ -96,12 +78,6 @@ public class UDPServer implements Runnable {
 
     }
 
-    public HashMap<Integer, String> getDirecciones() {
-        return direcciones;
-    }
-
-    public void setDirecciones(HashMap<Integer, String> direcciones) {
-        this.direcciones = direcciones;
-    }
+   
 
 }

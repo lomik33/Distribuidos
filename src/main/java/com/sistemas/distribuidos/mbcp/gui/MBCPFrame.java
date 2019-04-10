@@ -282,7 +282,7 @@ public class MBCPFrame extends javax.swing.JFrame {
             this.mbcp = new MBCPAlgoritmo(procesoSeleccionado,this.listMensajesRecibidos,this.listFifo,this.lblMbcp);
       
             int puertoProceso = puertoInicial + (procesoSeleccionado);
-            udpServer = new UDPServer(puertoProceso, this.mbcp.mensajesRecibidos, this.mbcp,false);
+            udpServer = new UDPServer(puertoProceso, this.mbcp.mensajesRecibidos, this.mbcp);
             // TODO add your handling code here:
             threadReceive = new Thread(udpServer);
             threadReceive.start();
@@ -428,7 +428,7 @@ public class MBCPFrame extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "El mensaje ya fue enviado al proceso");
             } else {
 
-                String direccion = this.udpServer.getDirecciones().get(procesoDestino);
+                String direccion = UDPClient.direcciones.get(procesoDestino);
                 if (direccion.equals("")) {
                     JOptionPane.showMessageDialog(null, "No se conoce la direeccion logica del proceso porque aun no se han recibido mensajes");
                 } else {

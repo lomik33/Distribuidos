@@ -134,7 +134,7 @@ public class MBCPAlgoritmo implements MensajeListen {
 //        }
     //   }
     @Override
-    public boolean agregarMensaje(Mensaje mensaje) {
+    public boolean recibirMensaje(Mensaje mensaje) {
         boolean centinela = false;
 
         if (mensaje != null) {
@@ -165,7 +165,7 @@ public class MBCPAlgoritmo implements MensajeListen {
                     if (m.getK() == mensaje.getK() && m.getTk() == mensaje.getTk()) {
                         this.mensajesEnEspera.remove(m);
                     } else {
-                        agregarMensaje(m);
+                        recibirMensaje(m);
                     }
                 }
 
