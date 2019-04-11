@@ -5,6 +5,7 @@
  */
 package com.sistemas.distribuidos.mbcp;
 
+import com.sistemas.distribuidos.exclusionmutua.CentralizadoMutex;
 import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
 import com.sistemas.distribuidos.mbcp.implementacion.MensajeListen;
 import java.io.ByteArrayInputStream;
@@ -51,16 +52,34 @@ public class UDPServer implements Runnable {
                 ByteArrayInputStream in = new ByteArrayInputStream(data);
                 ObjectInputStream is = new ObjectInputStream(in);
                 Mensaje mensaje = null;
+                String ack="";
                 try {
                     mensaje = (Mensaje) is.readObject();
-                   
+                    mensaje.setDireccion(request.getAddress().getHostAddress());
+                  
                     listener.recibirMensaje(mensaje);
+                    if(mensaje.getTk()==1){
+                         if(!CentralizadoMutex.regionCriticaGinnaEnUso)
+                           ack="OK"+" SALDO:"+Double.toString(CentralizadoMutex.saldoGinna);
+                         else
+                             ack="WAIT";
+                    }
+                    if(mensaje.getTk()==2){
+                         if(!CentralizadoMutex.regionCriticaIsmaelEnUso)
+                           ack="OK"+" SALDO:"+Double.toString(CentralizadoMutex.saldoIsmael);
+                         else
+                             ack="WAIT";
+                    }
+                 
+                           
 
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
+                
+             
 
-                String respuesta = mensaje.toString();
+                String respuesta = mensaje.toString()+ack;
                 byte[] respuestaBytes = respuesta.getBytes();
 
                 DatagramPacket reply = new DatagramPacket(respuestaBytes,

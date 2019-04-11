@@ -22,6 +22,12 @@ public class Mensaje implements Serializable {
     private String datos;
     private CopyOnWriteArrayList<Hm> Hmi;
     private boolean enEspera;
+    
+    private String direccion;    
+
+    private double saldoRegionCriticaGinna;
+    private double salgoRegionCriticaIsmael;
+
 
     public Mensaje() {
         Hmi = new CopyOnWriteArrayList();
@@ -102,4 +108,30 @@ public class Mensaje implements Serializable {
         this.enEspera = enEspera;
     }
 
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public double getSaldoRegionCriticaGinna() {
+        return saldoRegionCriticaGinna;
+    }
+
+    public void setSaldoRegionCriticaGinna(double saldoRegionCriticaGinna) {
+        this.saldoRegionCriticaGinna = saldoRegionCriticaGinna;
+    }
+
+    public double getSalgoRegionCriticaIsmael() {
+        return salgoRegionCriticaIsmael;
+    }
+
+    public void setSalgoRegionCriticaIsmael(double salgoRegionCriticaIsmael) {
+        this.salgoRegionCriticaIsmael = salgoRegionCriticaIsmael;
+    }
+
+    
+    
 }
