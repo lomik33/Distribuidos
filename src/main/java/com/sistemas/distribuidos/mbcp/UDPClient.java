@@ -96,8 +96,8 @@ public class UDPClient {
      
             direcciones.put(1, "192.168.19.140");
             direcciones.put(2, "192.168.19.140");
-            direcciones.put(3, "192.168.19.133");
-            direcciones.put(4, "192.168.19.133");
+            direcciones.put(3, "192.168.16.121");
+            direcciones.put(4, "192.168.16.121");
             direcciones.put(5, "192.168.16.173");
             direcciones.put(6, "192.168.16.173");
         
