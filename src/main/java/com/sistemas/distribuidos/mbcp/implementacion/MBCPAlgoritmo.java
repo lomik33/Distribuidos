@@ -46,7 +46,7 @@ public class MBCPAlgoritmo implements MensajeListen {
     }
 
     /**
-     * Algortiritmo difusion send
+     * Algortiritmo construccion de mensaje
      *
      * @param mensajeStr
      * @return

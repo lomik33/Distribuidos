@@ -345,8 +345,11 @@ public class FrameCentralizado extends javax.swing.JFrame {
                JOptionPane.showMessageDialog(this, "OK");
                isAlive=true;
            }
-             if(!isAlive) 
-                this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso);
+             if(!isAlive) {
+                 this.centralizadoMutex.proceso.setEstatus("PARTICIPANTE");
+                  this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso,true);
+             }
+               
                 
            
         
@@ -354,10 +357,13 @@ public class FrameCentralizado extends javax.swing.JFrame {
 
     private void btnNotificarNuevoCoordinadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotificarNuevoCoordinadorActionPerformed
         // TODO add your handling code here:
-        CoordinarAnillo.procesoActual.setEstatus("COORDINADOR");
+        CoordinarAnillo.procesoActual.setEstatus("NO PARTICIPANTE");
         CoordinarAnillo.procesoActual.setIsCoordinador(true);
         Proceso proceso=CoordinarAnillo.getProceso(2);
-        centralizadoMutex.mandaMensajeEleccion(CoordinarAnillo.procesoActual,proceso);
+        proceso.setEstatus("NO PARTICIPANTE");
+        CoordinarAnillo.actualizaEstatus(CoordinarAnillo.procesoActual);     
+        UtilsAlgoritmos.actualizaListaProcesos(listProcesosActivos, CoordinarAnillo.procesos);   
+        centralizadoMutex.mandaMensajeCoordinador(CoordinarAnillo.procesoActual,proceso);
     }//GEN-LAST:event_btnNotificarNuevoCoordinadorActionPerformed
 
    

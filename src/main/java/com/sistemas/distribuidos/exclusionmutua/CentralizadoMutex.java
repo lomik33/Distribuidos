@@ -5,8 +5,6 @@
  */
 package com.sistemas.distribuidos.exclusionmutua;
 
-
-
 import com.sistemas.distribuidos.mbcp.UDPClient;
 import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
 import com.sistemas.distribuidos.mbcp.implementacion.MensajeListen;
@@ -31,14 +29,13 @@ import org.jcp.xml.dsig.internal.dom.Utils;
  * @author lomik
  */
 public class CentralizadoMutex implements MensajeListen {
-    
-  
+
     public ArrayList<Mensaje> mensajesRecibidos;
-    private  CopyOnWriteArrayList<Mensaje>  colaPeticionesRegionCriticaGinna;
-    private  CopyOnWriteArrayList<Mensaje>  colaPeticionesRegionCriticaIsmael;
+    private CopyOnWriteArrayList<Mensaje> colaPeticionesRegionCriticaGinna;
+    private CopyOnWriteArrayList<Mensaje> colaPeticionesRegionCriticaIsmael;
     Proceso coordinador;
     Proceso proceso;
-    
+
     public static boolean regionCriticaGinnaEnUso;
     public static boolean regionCriticaIsmaelEnUso;
     public static double saldoGinna;
@@ -49,80 +46,76 @@ public class CentralizadoMutex implements MensajeListen {
     private JLabel lblBloqueoCtaIsmael;
     private JLabel lblSaldoGinna;
     private JLabel lblSaldoIsmael;
-    
+
     private JButton btnRegionCriticaGinna;
     private JButton btnRegionCriticaIsmael;
-    
+
     private JList listProcesosActivos;
 
-    
-            
-   private CentralizadoMutex(){
-               
-                this.mensajesRecibidos= new ArrayList();
-                this.colaPeticionesRegionCriticaGinna= new CopyOnWriteArrayList<Mensaje> ();
-                this.colaPeticionesRegionCriticaIsmael= new CopyOnWriteArrayList<Mensaje> ();
-                saldoGinna=2000;
-                saldoIsmael=1500;
-                
-            }
-   
-   public CentralizadoMutex(Proceso proceso, JList listColaPeticionesGinna, JList listColaPeticionesIsmael, JLabel lblEstatusCuentaGinna, JLabel lblBloqueoCtaIsmael,  JButton btnRegionCriticaGinna, JButton btnRegionCriticaIsmael, JLabel lblSaldoGinna, JLabel lblSaldoIsmael, JList listProcesosActivos){
-               this();
-               if(proceso.isCoordinador)
-                   this.coordinador=proceso;
-               else{
-                   this.coordinador= new Proceso(1,FrameCentralizado.puertoInicial+1);
-                   this.coordinador.direccion=UDPClient.direcciones.get(1);
-               }
-               this.proceso=proceso;
-               this.listColaPeticionesGinna=listColaPeticionesGinna;
-               this.listColaPeticionesIsmael=listColaPeticionesIsmael;
-               this.lblBloqueoCtaGinna=lblEstatusCuentaGinna;
-               this.lblBloqueoCtaIsmael=lblBloqueoCtaIsmael;
-               this.btnRegionCriticaGinna=btnRegionCriticaGinna;
-               this.btnRegionCriticaIsmael=btnRegionCriticaIsmael;
-               this.lblSaldoGinna=lblSaldoGinna;
-               this.lblSaldoIsmael=lblSaldoIsmael;
-               this.listProcesosActivos=listProcesosActivos;
-            }
-   
+    private CentralizadoMutex() {
+
+        this.mensajesRecibidos = new ArrayList();
+        this.colaPeticionesRegionCriticaGinna = new CopyOnWriteArrayList<Mensaje>();
+        this.colaPeticionesRegionCriticaIsmael = new CopyOnWriteArrayList<Mensaje>();
+        saldoGinna = 2000;
+        saldoIsmael = 1500;
+
+    }
+
+    public CentralizadoMutex(Proceso proceso, JList listColaPeticionesGinna, JList listColaPeticionesIsmael, JLabel lblEstatusCuentaGinna, JLabel lblBloqueoCtaIsmael, JButton btnRegionCriticaGinna, JButton btnRegionCriticaIsmael, JLabel lblSaldoGinna, JLabel lblSaldoIsmael, JList listProcesosActivos) {
+        this();
+        if (proceso.isCoordinador) {
+            this.coordinador = proceso;
+        } else {
+            this.coordinador = new Proceso(1, FrameCentralizado.puertoInicial + 1);
+            this.coordinador.direccion = UDPClient.direcciones.get(1);
+        }
+        this.proceso = proceso;
+        this.listColaPeticionesGinna = listColaPeticionesGinna;
+        this.listColaPeticionesIsmael = listColaPeticionesIsmael;
+        this.lblBloqueoCtaGinna = lblEstatusCuentaGinna;
+        this.lblBloqueoCtaIsmael = lblBloqueoCtaIsmael;
+        this.btnRegionCriticaGinna = btnRegionCriticaGinna;
+        this.btnRegionCriticaIsmael = btnRegionCriticaIsmael;
+        this.lblSaldoGinna = lblSaldoGinna;
+        this.lblSaldoIsmael = lblSaldoIsmael;
+        this.listProcesosActivos = listProcesosActivos;
+    }
+
     @Override
     public boolean recibirMensaje(Mensaje mensaje) {
         boolean centinela = false;
         //Algortitmo anillo
-            if(mensaje.TIPO_MENSAJE==3)
-            {
-                this.recepcionAlgoritmoAnillo(mensaje);
-                return true;
-            }
-   
-        if (proceso.isCoordinador) {     
-           
+        if (mensaje.TIPO_MENSAJE == 3) {
+            this.recepcionAlgoritmoAnillo(mensaje);
+            return true;
+        }
+
+        if (proceso.isCoordinador) {
+
             SwingUtilities.invokeLater(() -> {
                 if (mensaje.getTk() == 1) {
                     if (mensaje.getSaldoRegionCriticaGinna() == 0) {
-                        try { 
+                        try {
                             this.colaPeticionesRegionCriticaGinna.add(mensaje);
                             UtilsAlgoritmos.actualizaLista(listColaPeticionesGinna, this.colaPeticionesRegionCriticaGinna);
                             this.recibirMensajeRegionCriticaGinna(mensaje);
-                            
+
                         } catch (InterruptedException ex) {
                             Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                 } else if (mensaje.getTk() == 2) {
-                    
+
                     this.colaPeticionesRegionCriticaIsmael.add(mensaje);
                     UtilsAlgoritmos.actualizaLista(listColaPeticionesIsmael, this.colaPeticionesRegionCriticaIsmael);
                     this.recibirMensajesRegionCriticaIsmael(mensaje);
                 }
             });
-            
-           
+
         } else {
             if (mensaje.getTk() == 1) {
-                
+
                 this.lblSaldoGinna.setText(String.format("Saldo: $%f", mensaje.getSaldoRegionCriticaGinna()));
                 this.btnRegionCriticaGinna.setEnabled(true);
             } else if (mensaje.getTk() == 2) {
@@ -131,14 +124,11 @@ public class CentralizadoMutex implements MensajeListen {
             }
 
         }
-        
-       
 
         return centinela;
-       
-       
+
     }
-    
+
     private synchronized void recibirMensajeRegionCriticaGinna(Mensaje mensaje) throws InterruptedException {
 
         //En el mensaje tk seria el recurso que se desea obtener
@@ -151,7 +141,7 @@ public class CentralizadoMutex implements MensajeListen {
             lblBloqueoCtaGinna.setEnabled(false);
             btnRegionCriticaGinna.setEnabled(false);
             lblBloqueoCtaGinna.setText("EN USO POR EL PROCESO:" + Integer.toString(mensaje.getK()));
-         
+
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
 
@@ -160,7 +150,7 @@ public class CentralizadoMutex implements MensajeListen {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                  
+
                     lblBloqueoCtaGinna.setEnabled(true);
                     btnRegionCriticaGinna.setEnabled(true);
                     lblBloqueoCtaGinna.setText("LIBERADO");
@@ -172,36 +162,37 @@ public class CentralizadoMutex implements MensajeListen {
                     } catch (IOException ex) {
                         Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                     colaPeticionesRegionCriticaGinna.remove(mensaje);
+                    colaPeticionesRegionCriticaGinna.remove(mensaje);
                     UtilsAlgoritmos.actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaGinna);
-                     for(Mensaje m : colaPeticionesRegionCriticaGinna)
-                         try {
-                             recibirMensajeRegionCriticaGinna(m);
+                    for (Mensaje m : colaPeticionesRegionCriticaGinna) {
+                        try {
+                            recibirMensajeRegionCriticaGinna(m);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    }
 
                 }
-            });         
+            });
 
         }
 
     }
-    
-       private synchronized void recibirMensajesRegionCriticaIsmael(Mensaje mensaje) {
 
-         //En el mensaje tk seria el recurso que se desea obtener
+    private synchronized void recibirMensajesRegionCriticaIsmael(Mensaje mensaje) {
+
+        //En el mensaje tk seria el recurso que se desea obtener
         //Region critica cuenta de Ginna
         if (regionCriticaIsmaelEnUso) {
             //this.colaPeticionesRegionCriticaGinna.add(mensaje);
             UtilsAlgoritmos.actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaIsmael);
-         
+
         } else {
             regionCriticaIsmaelEnUso = true;
             lblBloqueoCtaIsmael.setEnabled(false);
             btnRegionCriticaIsmael.setEnabled(false);
             lblBloqueoCtaIsmael.setText("EN USO POR EL PROCESO:" + Integer.toString(mensaje.getK()));
-         
+
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
 
@@ -210,7 +201,7 @@ public class CentralizadoMutex implements MensajeListen {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                  
+
                     lblBloqueoCtaIsmael.setEnabled(true);
                     btnRegionCriticaIsmael.setEnabled(true);
                     lblBloqueoCtaIsmael.setText("LIBERADO");
@@ -222,21 +213,21 @@ public class CentralizadoMutex implements MensajeListen {
                     } catch (IOException ex) {
                         Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                     colaPeticionesRegionCriticaIsmael.remove(mensaje);
-              UtilsAlgoritmos.actualizaLista(listColaPeticionesIsmael, colaPeticionesRegionCriticaIsmael);
-                     for(Mensaje m : colaPeticionesRegionCriticaIsmael)
-                         recibirMensajesRegionCriticaIsmael(m);
+                    colaPeticionesRegionCriticaIsmael.remove(mensaje);
+                    UtilsAlgoritmos.actualizaLista(listColaPeticionesIsmael, colaPeticionesRegionCriticaIsmael);
+                    for (Mensaje m : colaPeticionesRegionCriticaIsmael) {
+                        recibirMensajesRegionCriticaIsmael(m);
+                    }
 
                 }
-            });         
+            });
 
         }
     }
 
-
-    public boolean enviarMensaje(int regionCritica){
-        boolean centinela=false;
-        Mensaje mensaje= new Mensaje();
+    public boolean enviarMensaje(int regionCritica) {
+        boolean centinela = false;
+        Mensaje mensaje = new Mensaje();
         mensaje.setK(this.proceso.numero);
         mensaje.setTk(regionCritica);
         mensaje.setDatos(String.format("proceso:%s desea retirar $1.0", Integer.toString(this.proceso.numero)));
@@ -266,7 +257,7 @@ public class CentralizadoMutex implements MensajeListen {
                     }
                 }
             }
-            centinela= true;
+            centinela = true;
         } catch (SocketException ex) {
             Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownHostException ex) {
@@ -274,111 +265,114 @@ public class CentralizadoMutex implements MensajeListen {
         } catch (IOException ex) {
             Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return centinela;
     }
-    
-    public void enviarRespuesta(Mensaje mensaje) throws IOException{
+
+    public void enviarRespuesta(Mensaje mensaje) throws IOException {
         try {
             mensaje.setEnEspera(false);
-            UDPClient client = new UDPClient(mensaje.getDireccion(),FrameCentralizado.puertoInicial + mensaje.getK());
+            UDPClient client = new UDPClient(mensaje.getDireccion(), FrameCentralizado.puertoInicial + mensaje.getK());
             mensaje.setSaldoRegionCriticaGinna(saldoGinna);
             mensaje.setSalgoRegionCriticaIsmael(saldoIsmael);
             String respuesta = client.send(mensaje);
-           
+
         } catch (SocketException ex) {
             Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownHostException ex) {
             Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
-    private void recepcionAlgoritmoAnillo(Mensaje mensaje){
-        System.out.println("anillo"+mensaje);
-        if(mensaje.getK()<this.proceso.getNumero()){
+
+    private void recepcionAlgoritmoAnillo(Mensaje mensaje) {
+        System.out.println("anillo" + mensaje);
+        if (mensaje.getK() < this.proceso.getNumero()) {
             this.proceso.setEstatus(mensaje.getDatos());
-            if(mensaje.getDatos().equals("COORDINADOR"))
+            if (mensaje.getDatos().equals("COORDINADOR")) {
                 this.proceso.setIsCoordinador(true);
+            }
             CoordinarAnillo.actualizaEstatus(proceso);
-           this.recorreAnillo(proceso);
+            this.recorreAnillo(proceso, false);
         }
-        
-        if(mensaje.getK()>this.proceso.getNumero()){
+
+        if (mensaje.getK() > this.proceso.getNumero()) {
             this.proceso.setEstatus(mensaje.getDatos());
-            if(mensaje.getDatos().equals("COORDINADOR"))
-                this.proceso.setIsCoordinador(true);
-            CoordinarAnillo.actualizaEstatus(mensaje.getK(), mensaje.getDatos());
-            Proceso p=CoordinarAnillo.getProceso(mensaje.getK());
-           this.recorreAnillo(this.proceso);
+            CoordinarAnillo.actualizaEstatus(this.proceso);
+            CoordinarAnillo.actualizaEstatus(mensaje.getK(), mensaje.getDatos(), mensaje.isEnEspera());
+
+            if(mensaje.isEnEspera())
+                
+            this.recorreAnillo(this.proceso, false);
         }
-        
-        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos,CoordinarAnillo.procesos);
-    }
-    
-    
-     public  void recorreAnillo(Proceso proceso){
-         proceso.setEstatus("PARTICIPANTE");
-         for(Proceso p : CoordinarAnillo.procesos){
-             if(proceso.getNumero()==p.getNumero())
-                 p.setEstatus(proceso.getEstatus());
-             if(p.isCoordinador)
-                 p.setEstatus("DEAD");
-             if(p.getNumero()==proceso.getNumero()+1){
-                 mandaMensajeEleccion(proceso,p);                 
-             }           
-                 
-         }
+
         UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
     }
-     
-      public void mandaMensajeEleccion(Proceso proceso, Proceso siguiente){
-        Mensaje m= new Mensaje();
-            m.setK(proceso.numero);
-            m.TIPO_MENSAJE=3;
-            m.setDatos(proceso.getEstatus());
-            String response="";
-            boolean isAlive=false;
+
+    public void recorreAnillo(Proceso P, boolean isDead) {
+        //proceso.setEstatus("PARTICIPANTE");
+        for (Proceso p : CoordinarAnillo.procesos) {
+            if (proceso.getNumero() == p.getNumero()) {
+                p.setEstatus(proceso.getEstatus());
+            }
+            if (p.isCoordinador && isDead) {
+                p.setEstatus("DEAD");
+            }
+            if (p.getNumero() == proceso.getNumero() + 1) {
+                mandaMensajeEleccion(proceso, p);
+            }
+
+        }
+        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
+    }
+
+    public void mandaMensajeEleccion(Proceso proceso, Proceso siguiente) {
+        Mensaje m = new Mensaje();
+        m.setK(proceso.numero);
+        m.TIPO_MENSAJE = 3;
+        m.setDatos(proceso.getEstatus());
+        String response = "";
+        boolean isAlive = false;
         try {
-            UDPClient ping= new UDPClient(siguiente.getDireccion(), siguiente.puerto,5000);
-             response=ping.send(m);
-          
-           } catch (SocketException ex) {
+            UDPClient ping = new UDPClient(siguiente.getDireccion(), siguiente.puerto, 5000);
+            response = ping.send(m);
+
+        } catch (SocketException ex) {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownHostException ex) {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
         }
-           if(response!= null && response.contains("NO PARTICIPANTE")) {
-              for(Proceso p: CoordinarAnillo.procesos){
-                  if(p.getNumero()==CoordinarAnillo.procesoActual.getNumero())
-                      p.setEstatus("NO PARTICIPANTE");
-              }           
-              
-           }
-            UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
+        if (response != null && response.contains("NO PARTICIPANTE")) {
+            for (Proceso p : CoordinarAnillo.procesos) {
+                if (p.getNumero() == CoordinarAnillo.procesoActual.getNumero()) {
+                    p.setEstatus("NO PARTICIPANTE");
+                }
+            }
+
+        }
+        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
     }
-      
-      
-        public void mandaMensajeCoordinador(Proceso proceso, Proceso siguiente){
-        Mensaje m= new Mensaje();
-            m.setK(proceso.numero);
-            m.TIPO_MENSAJE=3;
-            m.setDatos(proceso.getEstatus());
-            String response="";
-            boolean isAlive=false;
+
+    public void mandaMensajeCoordinador(Proceso proceso, Proceso siguiente) {
+        Mensaje m = new Mensaje();
+        m.setK(proceso.numero);
+        m.TIPO_MENSAJE = 3;
+        m.setDatos(proceso.getEstatus());
+        m.setEnEspera(true);
+        String response = "";
+        boolean isAlive = false;
         try {
-            UDPClient ping= new UDPClient(siguiente.getDireccion(), siguiente.puerto,5000);
-             response=ping.send(m);          
-           } catch (SocketException ex) {
+            UDPClient ping = new UDPClient(siguiente.getDireccion(), siguiente.puerto, 5000);
+            response = ping.send(m);
+        } catch (SocketException ex) {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownHostException ex) {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
-        }         
-            UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
+        }
+        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
     }
-    
+
 }

@@ -30,18 +30,25 @@ public class CoordinarAnillo implements MensajeListen {
     public static void actualizaEstatus(Proceso proceso){
         
         for(Proceso p: procesos){
-            if(p.getNumero()==proceso.getNumero())
-                p.setEstatus(proceso.getEstatus());
+            if(p.getNumero()==proceso.getNumero()){
+                p.setEstatus(proceso.getEstatus()); 
+                p.isCoordinador=proceso.getIsCoordinador();
+            }
+               
+            
         }
     }
     
     
-     public static void actualizaEstatus(int numero, String estatus){
+     public static void actualizaEstatus(int numero, String estatus, boolean isCoordinador){
         
         for(Proceso p: procesos){
-            if(p.getNumero()==numero)
-                p.setEstatus(estatus);
+            if(p.getNumero()==numero){
+                  p.setEstatus(estatus);
+                  p.isCoordinador=isCoordinador;
+            }              
         }
+      
     }
      
      public static Proceso getProceso(int numero){

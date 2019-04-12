@@ -14,7 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Mensaje implements Serializable {
 
-    //1=MCBP, 2,MUTEX, 3 ANILLO
+    //1=MBCP, 2,MUTEX, 3 ANILLO
     public int TIPO_MENSAJE;
     
     
@@ -23,10 +23,10 @@ public class Mensaje implements Serializable {
     private int tk;
     private String datos;
     private CopyOnWriteArrayList<Hm> Hmi;
-    private boolean enEspera;
     
-    private String direccion;    
-
+    private boolean enEspera;    
+    private String direccion; 
+    //Variables para mensajes del algoritmo de exclusion mutua
     private double saldoRegionCriticaGinna;
     private double salgoRegionCriticaIsmael;
 
