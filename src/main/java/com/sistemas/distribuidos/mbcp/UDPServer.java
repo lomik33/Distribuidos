@@ -6,6 +6,7 @@
 package com.sistemas.distribuidos.mbcp;
 
 import com.sistemas.distribuidos.exclusionmutua.CentralizadoMutex;
+import com.sistemas.distribuidos.exclusionmutua.CoordinarAnillo;
 import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
 import com.sistemas.distribuidos.mbcp.implementacion.MensajeListen;
 import java.io.ByteArrayInputStream;
@@ -56,7 +57,10 @@ public class UDPServer implements Runnable {
                 try {
                     mensaje = (Mensaje) is.readObject();
                     mensaje.setDireccion(request.getAddress().getHostAddress());
-                  
+                
+                    if(mensaje.TIPO_MENSAJE!=3){
+                        
+                 
                     listener.recibirMensaje(mensaje);
                     if(mensaje.getTk()==1){
                          if(!CentralizadoMutex.regionCriticaGinnaEnUso)
@@ -70,7 +74,14 @@ public class UDPServer implements Runnable {
                          else
                              ack="WAIT";
                     }
-                 
+                    }else{
+                        
+                        if(mensaje.getDatos().equals("PARTICIPANTE")&& mensaje.getK()<CoordinarAnillo.procesoActual.getNumero()){
+                            ack="NO PARTICIPANTE";
+                        }
+                        
+                    }
+                    
                            
 
                 } catch (ClassNotFoundException e) {

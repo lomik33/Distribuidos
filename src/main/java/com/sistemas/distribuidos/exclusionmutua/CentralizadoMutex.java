@@ -5,6 +5,8 @@
  */
 package com.sistemas.distribuidos.exclusionmutua;
 
+
+
 import com.sistemas.distribuidos.mbcp.UDPClient;
 import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
 import com.sistemas.distribuidos.mbcp.implementacion.MensajeListen;
@@ -21,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import org.jcp.xml.dsig.internal.dom.Utils;
 
 /**
  *
@@ -94,7 +97,7 @@ public class CentralizadoMutex implements MensajeListen {
                     if (mensaje.getSaldoRegionCriticaGinna() == 0) {
                         try { 
                             this.colaPeticionesRegionCriticaGinna.add(mensaje);
-                            this.actualizaLista(listColaPeticionesGinna, this.colaPeticionesRegionCriticaGinna);
+                            UtilsAlgoritmos.actualizaLista(listColaPeticionesGinna, this.colaPeticionesRegionCriticaGinna);
                             this.recibirMensajeRegionCriticaGinna(mensaje);
                             
                         } catch (InterruptedException ex) {
@@ -102,8 +105,9 @@ public class CentralizadoMutex implements MensajeListen {
                         }
                     }
                 } else if (mensaje.getTk() == 2) {
+                    
                     this.colaPeticionesRegionCriticaIsmael.add(mensaje);
-                    this.actualizaLista(listColaPeticionesIsmael, this.colaPeticionesRegionCriticaIsmael);
+                    UtilsAlgoritmos.actualizaLista(listColaPeticionesIsmael, this.colaPeticionesRegionCriticaIsmael);
                     this.recibirMensajesRegionCriticaIsmael(mensaje);
                 }
             });
@@ -120,6 +124,8 @@ public class CentralizadoMutex implements MensajeListen {
             }
 
         }
+        
+       
 
         return centinela;
        
@@ -132,7 +138,7 @@ public class CentralizadoMutex implements MensajeListen {
         //Region critica cuenta de Ginna
         if (regionCriticaGinnaEnUso) {
             //this.colaPeticionesRegionCriticaGinna.add(mensaje);
-            this.actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaGinna);
+            UtilsAlgoritmos.actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaGinna);
         } else {
             regionCriticaGinnaEnUso = true;
             lblBloqueoCtaGinna.setEnabled(false);
@@ -160,7 +166,7 @@ public class CentralizadoMutex implements MensajeListen {
                         Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                     }
                      colaPeticionesRegionCriticaGinna.remove(mensaje);
-                     actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaGinna);
+                    UtilsAlgoritmos.actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaGinna);
                      for(Mensaje m : colaPeticionesRegionCriticaGinna)
                          try {
                              recibirMensajeRegionCriticaGinna(m);
@@ -181,7 +187,8 @@ public class CentralizadoMutex implements MensajeListen {
         //Region critica cuenta de Ginna
         if (regionCriticaIsmaelEnUso) {
             //this.colaPeticionesRegionCriticaGinna.add(mensaje);
-            this.actualizaLista(listColaPeticionesIsmael, colaPeticionesRegionCriticaIsmael);
+            UtilsAlgoritmos.actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaIsmael);
+         
         } else {
             regionCriticaIsmaelEnUso = true;
             lblBloqueoCtaIsmael.setEnabled(false);
@@ -209,7 +216,7 @@ public class CentralizadoMutex implements MensajeListen {
                         Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                     }
                      colaPeticionesRegionCriticaIsmael.remove(mensaje);
-                     actualizaLista(listColaPeticionesIsmael, colaPeticionesRegionCriticaIsmael);
+              UtilsAlgoritmos.actualizaLista(listColaPeticionesIsmael, colaPeticionesRegionCriticaIsmael);
                      for(Mensaje m : colaPeticionesRegionCriticaIsmael)
                          recibirMensajesRegionCriticaIsmael(m);
 
@@ -279,20 +286,6 @@ public class CentralizadoMutex implements MensajeListen {
         }
     }
     
-    /***
-     * Metódo utilitario que permite refrescar el contenido de un componente JList con base a una lista de objetos Mensaje
-     * @param list
-     * @param mensajes 
-     */
-    private void actualizaLista(JList list, List<Mensaje> mensajes) {
-        String[] esperaStr = new String[mensajes.size()];
-        int i = 0;
-        for (Mensaje m : mensajes) {
-            esperaStr[i] = m.getDatos();
-            i++;
-        }  
-        list.setListData((String[]) esperaStr);
-          
-    }
+    
     
 }

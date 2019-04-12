@@ -47,6 +47,7 @@ public class Proceso {
         this.isCoordinador = isCoordinador;
         this.puerto = puerto;
         direccion = UDPClient.direcciones.get(numero);
+        this.estatus="NO PARTICIPANTE";
     }
 
     /***
@@ -65,6 +66,23 @@ public class Proceso {
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
+    
+    //Participante no participante
+     private String estatus;
+
+    public String getEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(String estatus) {
+        this.estatus = estatus;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("PROCESO %d %s %s", this.numero,(this.isCoordinador?"COORDINADOR":" "),this.estatus);
+    }
+     
     
     
      

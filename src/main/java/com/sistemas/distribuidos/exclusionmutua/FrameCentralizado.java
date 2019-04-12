@@ -13,6 +13,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -66,6 +67,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         lblBloqueoCtaGinna = new javax.swing.JLabel();
         lblBloqueoCtaIsmael = new javax.swing.JLabel();
+        btnMandarMensajeCoordinador = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -121,6 +123,13 @@ public class FrameCentralizado extends javax.swing.JFrame {
         lblBloqueoCtaGinna.setText("ESTATUS:");
 
         lblBloqueoCtaIsmael.setText("ESTATUS:");
+
+        btnMandarMensajeCoordinador.setText("PING COORDINADOR");
+        btnMandarMensajeCoordinador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMandarMensajeCoordinadorActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -183,8 +192,11 @@ public class FrameCentralizado extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(lblBloqueoCtaIsmael, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnMandarMensajeCoordinador)))
+                .addContainerGap(148, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -233,8 +245,9 @@ public class FrameCentralizado extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(lblProcesosActivos)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnMandarMensajeCoordinador)))
         );
 
         pack();
@@ -265,6 +278,20 @@ public class FrameCentralizado extends javax.swing.JFrame {
         }
         this.lblSaldoGinna.setText(String.format("Saldo: $%f", centralizadoMutex.saldoGinna));
         this.lblSaldoIsmael.setText(String.format("Saldo: $%f", centralizadoMutex.saldoIsmael));
+       
+        for(int i=0;i<this.comboProcesos.getItemCount();i++){
+             int ps = (i + 1);
+             int port = puertoInicial + procesoSeleccionado;
+             
+             if(ps!=proceso.getNumero())
+                         CoordinarAnillo.procesos.add(new Proceso(ps, port));
+             else  
+                 CoordinarAnillo.procesos.add(proceso);
+
+            
+        }
+        CoordinarAnillo.procesoActual=proceso;
+        UtilsAlgoritmos.actualizaListaProcesos(listProcesosActivos, CoordinarAnillo.procesos);
     }//GEN-LAST:event_btnLanzarActionPerformed
 
     private void btnRegionCriticaIsmaelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegionCriticaIsmaelActionPerformed
@@ -278,6 +305,84 @@ public class FrameCentralizado extends javax.swing.JFrame {
       
     }//GEN-LAST:event_btnRegionCriticaGinnaActionPerformed
 
+    private void btnMandarMensajeCoordinadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMandarMensajeCoordinadorActionPerformed
+     
+            Mensaje m= new Mensaje();
+            m.TIPO_MENSAJE=3;
+            m.setDatos("IsAlive");
+            String response="";
+            boolean isAlive=false;
+        try {
+            UDPClient ping= new UDPClient(this.centralizadoMutex.coordinador.getDireccion(), this.centralizadoMutex.coordinador.puerto,5000);
+             response=ping.send(m);
+         
+                    
+            
+           } catch (SocketException ex) {
+            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
+        }
+           if(response==null || response.equals("")) {
+               JOptionPane.showMessageDialog(this, "DEAD");
+            }else{
+               JOptionPane.showMessageDialog(this, "OK");
+               isAlive=true;
+           }
+             if(!isAlive) 
+                 recorreAnillo(this.centralizadoMutex.proceso);
+                
+           
+        
+    }//GEN-LAST:event_btnMandarMensajeCoordinadorActionPerformed
+
+    private void mandaMensajeEleccion(Proceso proceso, Proceso siguiente){
+        Mensaje m= new Mensaje();
+            m.setK(proceso.numero);
+            m.TIPO_MENSAJE=3;
+            m.setDatos("PARTICIPANTE");
+            String response="";
+            boolean isAlive=false;
+        try {
+            UDPClient ping= new UDPClient(siguiente.getDireccion(), siguiente.puerto,5000);
+             response=ping.send(m);
+         JOptionPane.showMessageDialog(this, response);
+                    
+            
+           } catch (SocketException ex) {
+            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
+        }
+           if(response!= null && response.contains("NO PARTICIPANTE")) {
+              for(Proceso p: CoordinarAnillo.procesos){
+                  if(p.getNumero()==CoordinarAnillo.procesoActual.getNumero())
+                      p.setEstatus("NO PARTICIPANTE");
+              }
+              
+              
+           }
+            UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
+    }
+     public  void recorreAnillo(Proceso proceso){
+         proceso.setEstatus("PARTICIPANTE");
+         for(Proceso p : CoordinarAnillo.procesos){
+             if(proceso.getNumero()==p.getNumero())
+                 p.setEstatus(proceso.getEstatus());
+             if(p.isCoordinador)
+                 p.setEstatus("DEAD");
+             if(p.getNumero()==proceso.getNumero()+1){
+                  JOptionPane.showMessageDialog(this, "SE MANDA ELECCION A PROCESO:"+p.getNumero());
+                 mandaMensajeEleccion(CoordinarAnillo.procesoActual,p);
+                 
+             }
+         }
+        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
+    }
     /**
      * @param args the command line arguments
      */
@@ -315,6 +420,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLanzar;
+    private javax.swing.JButton btnMandarMensajeCoordinador;
     private javax.swing.JButton btnRegionCriticaGinna;
     private javax.swing.JButton btnRegionCriticaIsmael;
     private javax.swing.JComboBox<String> comboProcesos;

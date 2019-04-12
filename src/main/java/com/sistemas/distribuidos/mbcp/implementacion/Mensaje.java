@@ -16,6 +16,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Mensaje implements Serializable {
 
+    //1=MCBP, 2,MUTEX, 3 ANILLO
+    public int TIPO_MENSAJE;
+    
+    
     private int numeroMensaje;
     private int k;
     private int tk;

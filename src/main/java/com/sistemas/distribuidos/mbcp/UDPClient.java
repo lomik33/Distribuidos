@@ -38,6 +38,17 @@ public class UDPClient {
             
      }
      
+        public UDPClient(String direccionHost,int serverPort, int timeout) throws SocketException, UnknownHostException{
+            socket = new DatagramSocket();
+            socket.setSoTimeout(timeout);
+            //socket.setSoTimeout(puerto);
+            buffer = new byte[1024];
+           servidor = InetAddress.getByName(direccionHost);
+           this.serverPort=serverPort;
+           
+            
+     }
+     
      
      public  String send(String mensaje) throws IOException{ 
          String centinela="";
