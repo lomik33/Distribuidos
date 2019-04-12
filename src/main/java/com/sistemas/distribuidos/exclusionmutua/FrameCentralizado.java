@@ -68,6 +68,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
         lblBloqueoCtaGinna = new javax.swing.JLabel();
         lblBloqueoCtaIsmael = new javax.swing.JLabel();
         btnMandarMensajeCoordinador = new javax.swing.JButton();
+        btnNotificarNuevoCoordinador = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -131,6 +132,13 @@ public class FrameCentralizado extends javax.swing.JFrame {
             }
         });
 
+        btnNotificarNuevoCoordinador.setText("NOTIFICAR COORDINADOR");
+        btnNotificarNuevoCoordinador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNotificarNuevoCoordinadorActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -187,7 +195,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(lblProcesosActivos)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -195,8 +203,11 @@ public class FrameCentralizado extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnMandarMensajeCoordinador)))
-                .addContainerGap(148, Short.MAX_VALUE))
+                        .addComponent(btnMandarMensajeCoordinador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(405, 405, 405)
+                        .addComponent(btnNotificarNuevoCoordinador)))
+                .addContainerGap(116, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -247,7 +258,10 @@ public class FrameCentralizado extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnMandarMensajeCoordinador)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnMandarMensajeCoordinador)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnNotificarNuevoCoordinador))))
         );
 
         pack();
@@ -257,7 +271,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
         int procesoSeleccionado = (this.comboProcesos.getSelectedIndex() + 1);
         int puertoProceso = puertoInicial + procesoSeleccionado;
         Proceso proceso = new Proceso(procesoSeleccionado, puertoProceso);
-        centralizadoMutex = new CentralizadoMutex(proceso,this.listColaPeticionesGinna,this.listColaPeticionesIsmael,this.lblBloqueoCtaGinna,this.lblBloqueoCtaIsmael, this.btnRegionCriticaGinna,this.btnRegionCriticaIsmael,this.lblSaldoGinna,this.lblSaldoIsmael);
+        centralizadoMutex = new CentralizadoMutex(proceso,this.listColaPeticionesGinna,this.listColaPeticionesIsmael,this.lblBloqueoCtaGinna,this.lblBloqueoCtaIsmael, this.btnRegionCriticaGinna,this.btnRegionCriticaIsmael,this.lblSaldoGinna,this.lblSaldoIsmael, this.listProcesosActivos);
         try {
             udpServer = new UDPServer(proceso.getPuerto(), this.centralizadoMutex.mensajesRecibidos, this.centralizadoMutex);
         } catch (SocketException ex) {
@@ -281,7 +295,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
        
         for(int i=0;i<this.comboProcesos.getItemCount();i++){
              int ps = (i + 1);
-             int port = puertoInicial + procesoSeleccionado;
+             int port = puertoInicial + ps;
              
              if(ps!=proceso.getNumero())
                          CoordinarAnillo.procesos.add(new Proceso(ps, port));
@@ -332,57 +346,22 @@ public class FrameCentralizado extends javax.swing.JFrame {
                isAlive=true;
            }
              if(!isAlive) 
-                 recorreAnillo(this.centralizadoMutex.proceso);
+                this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso);
                 
            
         
     }//GEN-LAST:event_btnMandarMensajeCoordinadorActionPerformed
 
-    private void mandaMensajeEleccion(Proceso proceso, Proceso siguiente){
-        Mensaje m= new Mensaje();
-            m.setK(proceso.numero);
-            m.TIPO_MENSAJE=3;
-            m.setDatos("PARTICIPANTE");
-            String response="";
-            boolean isAlive=false;
-        try {
-            UDPClient ping= new UDPClient(siguiente.getDireccion(), siguiente.puerto,5000);
-             response=ping.send(m);
-         JOptionPane.showMessageDialog(this, response);
-                    
-            
-           } catch (SocketException ex) {
-            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
-        }
-           if(response!= null && response.contains("NO PARTICIPANTE")) {
-              for(Proceso p: CoordinarAnillo.procesos){
-                  if(p.getNumero()==CoordinarAnillo.procesoActual.getNumero())
-                      p.setEstatus("NO PARTICIPANTE");
-              }
-              
-              
-           }
-            UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
-    }
-     public  void recorreAnillo(Proceso proceso){
-         proceso.setEstatus("PARTICIPANTE");
-         for(Proceso p : CoordinarAnillo.procesos){
-             if(proceso.getNumero()==p.getNumero())
-                 p.setEstatus(proceso.getEstatus());
-             if(p.isCoordinador)
-                 p.setEstatus("DEAD");
-             if(p.getNumero()==proceso.getNumero()+1){
-                  JOptionPane.showMessageDialog(this, "SE MANDA ELECCION A PROCESO:"+p.getNumero());
-                 mandaMensajeEleccion(CoordinarAnillo.procesoActual,p);
-                 
-             }
-         }
-        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
-    }
+    private void btnNotificarNuevoCoordinadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotificarNuevoCoordinadorActionPerformed
+        // TODO add your handling code here:
+        CoordinarAnillo.procesoActual.setEstatus("COORDINADOR");
+        CoordinarAnillo.procesoActual.setIsCoordinador(true);
+        Proceso proceso=CoordinarAnillo.getProceso(2);
+        centralizadoMutex.mandaMensajeEleccion(CoordinarAnillo.procesoActual,proceso);
+    }//GEN-LAST:event_btnNotificarNuevoCoordinadorActionPerformed
+
+   
+    
     /**
      * @param args the command line arguments
      */
@@ -421,6 +400,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLanzar;
     private javax.swing.JButton btnMandarMensajeCoordinador;
+    private javax.swing.JButton btnNotificarNuevoCoordinador;
     private javax.swing.JButton btnRegionCriticaGinna;
     private javax.swing.JButton btnRegionCriticaIsmael;
     private javax.swing.JComboBox<String> comboProcesos;

@@ -56,10 +56,8 @@ public class UDPServer implements Runnable {
                 String ack="";
                 try {
                     mensaje = (Mensaje) is.readObject();
-                    mensaje.setDireccion(request.getAddress().getHostAddress());
-                
-                    if(mensaje.TIPO_MENSAJE!=3){
-                        
+                    mensaje.setDireccion(request.getAddress().getHostAddress());             
+                   
                  
                     listener.recibirMensaje(mensaje);
                     if(mensaje.getTk()==1){
@@ -74,13 +72,7 @@ public class UDPServer implements Runnable {
                          else
                              ack="WAIT";
                     }
-                    }else{
-                        
-                        if(mensaje.getDatos().equals("PARTICIPANTE")&& mensaje.getK()<CoordinarAnillo.procesoActual.getNumero()){
-                            ack="NO PARTICIPANTE";
-                        }
-                        
-                    }
+                   
                     
                            
 

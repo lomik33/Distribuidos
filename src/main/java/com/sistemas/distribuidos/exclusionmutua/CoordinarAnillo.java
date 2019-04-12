@@ -27,6 +27,30 @@ public class CoordinarAnillo implements MensajeListen {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    public static void actualizaEstatus(Proceso proceso){
+        
+        for(Proceso p: procesos){
+            if(p.getNumero()==proceso.getNumero())
+                p.setEstatus(proceso.getEstatus());
+        }
+    }
+    
+    
+     public static void actualizaEstatus(int numero, String estatus){
+        
+        for(Proceso p: procesos){
+            if(p.getNumero()==numero)
+                p.setEstatus(estatus);
+        }
+    }
+     
+     public static Proceso getProceso(int numero){
+          for(Proceso p: procesos){
+            if(p.getNumero()==numero)
+                return p;
+        }
+          return null;
+     }
     
    
     

@@ -22,12 +22,11 @@ public class MBCPAlgoritmo implements MensajeListen {
     private final int[] VTp;   
     private final CopyOnWriteArrayList<Hm> CI;
    
+    //variables de la interfaz
     private final ArrayList<Mensaje> mensajesConstruidos;  
     public ArrayList<Mensaje> mensajesRecibidos;    
     private final CopyOnWriteArrayList<Mensaje> mensajesEnEspera;
-    private int numeroMensaje;
- 
-    
+    private int numeroMensaje;   
     private final javax.swing.JList<String> listMensajesRecibidos;
     private final javax.swing.JList<String> listMensajesEnEspera;
     private final JLabel lblMbcp;
@@ -47,11 +46,12 @@ public class MBCPAlgoritmo implements MensajeListen {
     }
 
     /**
-     * Algortiritmo difusion
+     * Algortiritmo difusion send
      *
      * @param mensajeStr
      * @return
      */
+    
     public Mensaje construirMensaje(String mensajeStr) {
 
         this.numeroMensaje++;
@@ -102,37 +102,11 @@ public class MBCPAlgoritmo implements MensajeListen {
         String centinela = String.format("VT(%d)={%s}\nCI={%s}", this.numeroProceso, Arrays.toString(this.VTp), Hm.toStringHm(CI));
         return centinela;
     }
-
-//    
-//     private void enviarMensaje(int procesoDestino, int procesoSeleccionado, int puertoServidor, String mensajeStr) {
-//        try {
-//            // TODO add your handling code here:
-//            ++;
-//            Mensaje mensaje 
-//            String direccion = this.udpServer.getDirecciones().get(procesoDestino);
-//            if (direccion.equals("")) {
-//                JOptionPane.showMessageDialog(null, "No se conoce la direeccion logica del proceso porque aun no se han recibido mensajes");
-//            } else {
-//                UDPClient client = new UDPClient(direccion, puertoServidor);
-//                String respuesta = client.send(mensaje);
-//                this.mensajesEnviados.add(mensaje);
-//                String[] enviadosStr = new String[mensajesEnviados.size()];
-//                int i = 0;
-//                for (Mensaje m : mensajesEnviados) {
-//                    enviadosStr[i] = m.toString();
-//                    i++;
-//                }
-//                this.listMensajesEnviados.setListData((String[]) enviadosStr);
-//                this.lblRespuesta.setText(respuesta);
-//            }
-//        } catch (SocketException ex) {
-//            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (UnknownHostException ex) {
-//            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IOException ex) {
-//            Logger.getLogger(MBCPFrame.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-    //   }
+/***
+ * primitiva receive
+ * @param mensaje
+ * @return 
+ */
     @Override
     public boolean recibirMensaje(Mensaje mensaje) {
         boolean centinela = false;
