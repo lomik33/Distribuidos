@@ -5,13 +5,9 @@
  */
 package com.sistemas.distribuidos.exclusionmutua;
 
-import static com.sistemas.distribuidos.exclusionmutua.FrameCentralizado.puertoInicial;
 import com.sistemas.distribuidos.mbcp.UDPClient;
-
 import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
 import com.sistemas.distribuidos.mbcp.implementacion.MensajeListen;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
