@@ -94,7 +94,7 @@ public class UDPClient {
      static{
           direcciones = new HashMap();
      
-      direcciones.put(1, "192.168.19.140");
+            direcciones.put(1, "192.168.19.140");
             direcciones.put(2, "192.168.19.140");
             direcciones.put(3, "192.168.16.173");
             direcciones.put(4, "192.168.16.173");
