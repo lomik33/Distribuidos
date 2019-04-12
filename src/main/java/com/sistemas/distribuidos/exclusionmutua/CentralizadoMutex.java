@@ -17,6 +17,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -33,8 +34,8 @@ public class CentralizadoMutex implements MensajeListen {
     
   
     public ArrayList<Mensaje> mensajesRecibidos;
-    private  ArrayList<Mensaje> colaPeticionesRegionCriticaGinna;
-    private  ArrayList<Mensaje> colaPeticionesRegionCriticaIsmael;
+    private  CopyOnWriteArrayList<Mensaje>  colaPeticionesRegionCriticaGinna;
+    private  CopyOnWriteArrayList<Mensaje>  colaPeticionesRegionCriticaIsmael;
     Proceso coordinador;
     Proceso proceso;
     
@@ -51,7 +52,7 @@ public class CentralizadoMutex implements MensajeListen {
     
     private JButton btnRegionCriticaGinna;
     private JButton btnRegionCriticaIsmael;
-    
+    Timer timerGinna;
     
 
     
@@ -59,8 +60,8 @@ public class CentralizadoMutex implements MensajeListen {
    private CentralizadoMutex(){
                
                 this.mensajesRecibidos= new ArrayList();
-                this.colaPeticionesRegionCriticaGinna= new ArrayList();
-                this.colaPeticionesRegionCriticaIsmael= new ArrayList();
+                this.colaPeticionesRegionCriticaGinna= new CopyOnWriteArrayList<Mensaje> ();
+                this.colaPeticionesRegionCriticaIsmael= new CopyOnWriteArrayList<Mensaje> ();
                  saldoGinna=2000;
                  saldoIsmael=1500;
                 
@@ -89,23 +90,37 @@ public class CentralizadoMutex implements MensajeListen {
     public boolean recibirMensaje(Mensaje mensaje) {
         boolean centinela = false;
 
-        if (proceso.isCoordinador) {
+   
+        if (proceso.isCoordinador) {     
+           
             SwingUtilities.invokeLater(() -> {
                 if (mensaje.getTk() == 1) {
                     if (mensaje.getSaldoRegionCriticaGinna() == 0) {
-                        this.recibirMensajeRegionCriticaGinna(mensaje);
+                        try { 
+                            this.colaPeticionesRegionCriticaGinna.add(mensaje);
+                            this.actualizaLista(listColaPeticionesGinna, this.colaPeticionesRegionCriticaGinna);
+                            this.recibirMensajeRegionCriticaGinna(mensaje);
+                            
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
-
                 } else if (mensaje.getTk() == 2) {
+                    this.colaPeticionesRegionCriticaIsmael.add(mensaje);
+                    this.actualizaLista(listColaPeticionesIsmael, this.colaPeticionesRegionCriticaIsmael);
                     this.recibirMensajesRegionCriticaIsmael(mensaje);
                 }
-
             });
+            
+           
         } else {
             if (mensaje.getTk() == 1) {
-                lblSaldoGinna.setText(String.format("Saldo: $%f", mensaje.getSaldoRegionCriticaGinna()));
+                
+                this.lblSaldoGinna.setText(String.format("Saldo: $%f", mensaje.getSaldoRegionCriticaGinna()));
+                this.btnRegionCriticaGinna.setEnabled(true);
             } else if (mensaje.getTk() == 2) {
-                lblSaldoGinna.setText(String.format("Saldo: $%f", mensaje.getSalgoRegionCriticaIsmael()));
+                this.lblSaldoIsmael.setText(String.format("Saldo: $%f", mensaje.getSalgoRegionCriticaIsmael()));
+                this.btnRegionCriticaIsmael.setEnabled(true);
             }
 
         }
@@ -115,68 +130,97 @@ public class CentralizadoMutex implements MensajeListen {
        
     }
     
-    private synchronized void recibirMensajeRegionCriticaGinna(Mensaje mensaje) {
+    private synchronized void recibirMensajeRegionCriticaGinna(Mensaje mensaje) throws InterruptedException {
 
         //En el mensaje tk seria el recurso que se desea obtener
         //Region critica cuenta de Ginna
         if (regionCriticaGinnaEnUso) {
-            this.colaPeticionesRegionCriticaGinna.add(mensaje);
+            //this.colaPeticionesRegionCriticaGinna.add(mensaje);
             this.actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaGinna);
         } else {
             regionCriticaGinnaEnUso = true;
-          
-            this.lblBloqueoCtaGinna.setEnabled(false);
-            this.btnRegionCriticaGinna.setEnabled(false);
-            this.lblBloqueoCtaGinna.setText("EN USO POR EL PROCESO:" + Integer.toString(mensaje.getK()));
-            Timer timer = new Timer(30000, new ActionListener() {
+            lblBloqueoCtaGinna.setEnabled(false);
+            btnRegionCriticaGinna.setEnabled(false);
+            lblBloqueoCtaGinna.setText("EN USO POR EL PROCESO:" + Integer.toString(mensaje.getK()));
+         
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
 
-                @Override
-                public void actionPerformed(ActionEvent ae) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                  
                     lblBloqueoCtaGinna.setEnabled(true);
                     btnRegionCriticaGinna.setEnabled(true);
-                    lblBloqueoCtaGinna.setText("LIBERADO");                    
-                    regionCriticaGinnaEnUso = false;  
+                    lblBloqueoCtaGinna.setText("LIBERADO");
+                    regionCriticaGinnaEnUso = false;
                     saldoGinna--;
-                    lblSaldoGinna.setText(String.format("Saldo: $%f", saldoGinna));    
+                    lblSaldoGinna.setText(String.format("Saldo: $%f", saldoGinna));
                     try {
                         enviarRespuesta(mensaje);
                     } catch (IOException ex) {
                         Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
-                    }                 
+                    }
+                     colaPeticionesRegionCriticaGinna.remove(mensaje);
+                     actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaGinna);
+                     for(Mensaje m : colaPeticionesRegionCriticaGinna)
+                         try {
+                             recibirMensajeRegionCriticaGinna(m);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
                 }
-            });
-            timer.start();
+            });         
+
         }
 
     }
     
-        private synchronized void recibirMensajesRegionCriticaIsmael(Mensaje mensaje) {
+       private synchronized void recibirMensajesRegionCriticaIsmael(Mensaje mensaje) {
 
-        //En el mensaje tk seria el recurso que se desea obtener
+         //En el mensaje tk seria el recurso que se desea obtener
         //Region critica cuenta de Ginna
         if (regionCriticaIsmaelEnUso) {
-            this.colaPeticionesRegionCriticaIsmael.add(mensaje);
+            //this.colaPeticionesRegionCriticaGinna.add(mensaje);
             this.actualizaLista(listColaPeticionesIsmael, colaPeticionesRegionCriticaIsmael);
         } else {
             regionCriticaIsmaelEnUso = true;
-            this.lblBloqueoCtaIsmael.setEnabled(false);
-            this.btnRegionCriticaIsmael.setEnabled(false);
-            this.lblBloqueoCtaIsmael.setText("EN USO POR EL PROCESO:" + Integer.toString(mensaje.getK()));
-            Timer timer = new Timer(30000, new ActionListener() {
+            lblBloqueoCtaIsmael.setEnabled(false);
+            btnRegionCriticaIsmael.setEnabled(false);
+            lblBloqueoCtaIsmael.setText("EN USO POR EL PROCESO:" + Integer.toString(mensaje.getK()));
+         
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
 
-                @Override
-                public void actionPerformed(ActionEvent ae) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                  
                     lblBloqueoCtaIsmael.setEnabled(true);
                     btnRegionCriticaIsmael.setEnabled(true);
                     lblBloqueoCtaIsmael.setText("LIBERADO");
-                    saldoIsmael--;
                     regionCriticaIsmaelEnUso = false;
+                    saldoIsmael--;
                     lblSaldoIsmael.setText(String.format("Saldo: $%f", saldoIsmael));
-                }
-            });
-            timer.start();
-        }
+                    try {
+                        enviarRespuesta(mensaje);
+                    } catch (IOException ex) {
+                        Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                     colaPeticionesRegionCriticaIsmael.remove(mensaje);
+                     actualizaLista(listColaPeticionesIsmael, colaPeticionesRegionCriticaIsmael);
+                     for(Mensaje m : colaPeticionesRegionCriticaIsmael)
+                         recibirMensajesRegionCriticaIsmael(m);
 
+                }
+            });         
+
+        }
     }
 
 
@@ -231,6 +275,7 @@ public class CentralizadoMutex implements MensajeListen {
             mensaje.setSaldoRegionCriticaGinna(saldoGinna);
             mensaje.setSalgoRegionCriticaIsmael(saldoIsmael);
             String respuesta = client.send(mensaje);
+           
         } catch (SocketException ex) {
             Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownHostException ex) {
@@ -249,8 +294,9 @@ public class CentralizadoMutex implements MensajeListen {
         for (Mensaje m : mensajes) {
             esperaStr[i] = m.getDatos();
             i++;
-        }
+        }  
         list.setListData((String[]) esperaStr);
+          
     }
     
 }
