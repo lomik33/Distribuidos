@@ -6,7 +6,7 @@
 package com.sistemas.distribuidos.mbcp;
 
 import com.sistemas.distribuidos.exclusionmutua.CentralizadoMutex;
-import com.sistemas.distribuidos.exclusionmutua.CoordinarAnillo;
+import com.sistemas.distribuidos.exclusionmutua.CoordinadorAnillo;
 import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
 import com.sistemas.distribuidos.mbcp.implementacion.MensajeListen;
 import java.io.ByteArrayInputStream;

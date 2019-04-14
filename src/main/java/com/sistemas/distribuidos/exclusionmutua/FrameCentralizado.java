@@ -298,14 +298,13 @@ public class FrameCentralizado extends javax.swing.JFrame {
              int port = puertoInicial + ps;
              
              if(ps!=proceso.getNumero())
-                         CoordinarAnillo.procesos.add(new Proceso(ps, port));
+                         CoordinadorAnillo.procesos.add(new Proceso(ps, port));
              else  
-                 CoordinarAnillo.procesos.add(proceso);
-
+                 CoordinadorAnillo.procesos.add(proceso);
             
         }
-        CoordinarAnillo.procesoActual=proceso;
-        UtilsAlgoritmos.actualizaListaProcesos(listProcesosActivos, CoordinarAnillo.procesos);
+        CoordinadorAnillo.procesoActual=proceso;
+        UtilsAlgoritmos.actualizaListaProcesos(listProcesosActivos, CoordinadorAnillo.procesos);
     }//GEN-LAST:event_btnLanzarActionPerformed
 
     private void btnRegionCriticaIsmaelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegionCriticaIsmaelActionPerformed
@@ -320,50 +319,41 @@ public class FrameCentralizado extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRegionCriticaGinnaActionPerformed
 
     private void btnMandarMensajeCoordinadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMandarMensajeCoordinadorActionPerformed
-     
-            Mensaje m= new Mensaje();
-            m.TIPO_MENSAJE=3;
-            m.setDatos("IsAlive");
-            String response="";
-            boolean isAlive=false;
-        try {
-            UDPClient ping= new UDPClient(this.centralizadoMutex.coordinador.getDireccion(), this.centralizadoMutex.coordinador.puerto,5000);
-             response=ping.send(m);
-         
-                    
-            
-           } catch (SocketException ex) {
-            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
-        }
-           if(response==null || response.equals("")) {
-               JOptionPane.showMessageDialog(this, "DEAD");
-            }else{
-               JOptionPane.showMessageDialog(this, "OK");
-               isAlive=true;
-           }
-             if(!isAlive) {
-                 this.centralizadoMutex.proceso.setEstatus("PARTICIPANTE");
-                  this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso,true);
-             }
-               
-                
-           
+        Mensaje mensaje = new Mensaje();
+        mensaje.TIPO_MENSAJE = 3;
+        mensaje.setDatos("IsAlive");
         
+        boolean isAlive = CoordinadorAnillo.isALive(centralizadoMutex.coordinador, mensaje);
+      
+        if (!isAlive) {
+            this.centralizadoMutex.coordinador.setEstatus("DEAD"); 
+            this.centralizadoMutex.coordinador.setIsDead(true);
+            CoordinadorAnillo.actualizaEstatus(centralizadoMutex.coordinador);
+            this.centralizadoMutex.proceso.setEstatus("PARTICIPANTE");
+            mensaje.setDatos(this.centralizadoMutex.proceso.getEstatus());
+            mensaje.setK( this.centralizadoMutex.proceso.numero);
+            this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso, mensaje);
+            JOptionPane.showMessageDialog(this, "DEAD");
+        } else {
+            JOptionPane.showMessageDialog(this, "OK");            
+        }
     }//GEN-LAST:event_btnMandarMensajeCoordinadorActionPerformed
 
     private void btnNotificarNuevoCoordinadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotificarNuevoCoordinadorActionPerformed
         // TODO add your handling code here:
-        CoordinarAnillo.procesoActual.setEstatus("NO PARTICIPANTE");
-        CoordinarAnillo.procesoActual.setIsCoordinador(true);
-        Proceso proceso=CoordinarAnillo.getProceso(2);
-        proceso.setEstatus("NO PARTICIPANTE");
-        CoordinarAnillo.actualizaEstatus(CoordinarAnillo.procesoActual);     
-        UtilsAlgoritmos.actualizaListaProcesos(listProcesosActivos, CoordinarAnillo.procesos);   
-        centralizadoMutex.mandaMensajeCoordinador(CoordinarAnillo.procesoActual,proceso);
+        CoordinadorAnillo.procesoActual.setEstatus("");
+        CoordinadorAnillo.procesoActual.setIsCoordinador(true);
+        
+        this.centralizadoMutex.coordinador=CoordinadorAnillo.procesoActual;
+        this.centralizadoMutex.proceso=CoordinadorAnillo.procesoActual;
+        CoordinadorAnillo.actualizaEstatus(CoordinadorAnillo.procesoActual);         
+        UtilsAlgoritmos.actualizaListaProcesos(listProcesosActivos, CoordinadorAnillo.procesos);  
+         Mensaje mensaje = new Mensaje();
+        mensaje.TIPO_MENSAJE = 3;
+        mensaje.setDatos("COORDINADOR");
+        mensaje.setK(centralizadoMutex.proceso.numero);        
+        this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso, mensaje);
+        
     }//GEN-LAST:event_btnNotificarNuevoCoordinadorActionPerformed
 
    

@@ -16,6 +16,7 @@ public class Proceso {
     boolean isCoordinador;
     int puerto;
     String direccion;
+    boolean isDead;
 
     public int getNumero() {
         return numero;
@@ -81,6 +82,14 @@ public class Proceso {
     @Override
     public String toString() {
         return String.format("PROCESO %d %s %s", this.numero,(this.isCoordinador?"COORDINADOR":" "),this.estatus);
+    }
+
+    public boolean isIsDead() {
+        return isDead;
+    }
+
+    public void setIsDead(boolean isDead) {
+        this.isDead = isDead;
     }
      
     

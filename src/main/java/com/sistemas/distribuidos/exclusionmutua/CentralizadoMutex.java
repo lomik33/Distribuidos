@@ -285,55 +285,77 @@ public class CentralizadoMutex implements MensajeListen {
 
     private void recepcionAlgoritmoAnillo(Mensaje mensaje) {
         System.out.println("anillo" + mensaje);
-        if (mensaje.getK() < this.proceso.getNumero()) {
-            this.proceso.setEstatus(mensaje.getDatos());
-            if (mensaje.getDatos().equals("COORDINADOR")) {
-                this.proceso.setIsCoordinador(true);
+        if (mensaje.getDatos().contains("PARTICIPANTE")) {
+           //coordinador.setIsCoordinador(false);
+           //coordinador.setEstatus("DEAD"); 
+            coordinador.setIsDead(true);
+            CoordinadorAnillo.actualizaEstatus(coordinador);            
+            if (mensaje.getK() < this.proceso.getNumero()) {
+                CoordinadorAnillo.actualizaEstatus(mensaje.getK(), "NO PARTICIPANTE", false);
+                this.proceso.setEstatus("PARTICIPANTE");      
+                CoordinadorAnillo.actualizaEstatus(proceso);         
+                mensaje.setK(this.proceso.getNumero());
+                this.recorreAnillo(proceso,mensaje);
+            
+            } else {
+                if (mensaje.getK() > this.proceso.getNumero()) {
+                    this.proceso.setEstatus("NO PARTICIPANTE");
+                    CoordinadorAnillo.actualizaEstatus(this.proceso);
+                    CoordinadorAnillo.actualizaEstatus(this.coordinador.getNumero(), "DEAD", false);
+                    CoordinadorAnillo.actualizaEstatus(mensaje.getK(), "PARTICIPANTE", true);
+                    this.recorreAnillo(proceso, mensaje);
+                } else {
+                    if (mensaje.getK() == this.proceso.getNumero()) {
+                        coordinador.setIsCoordinador(false);
+                        coordinador.setEstatus("DEAD"); 
+                        CoordinadorAnillo.actualizaEstatus(coordinador);
+                        this.proceso.setEstatus("");
+                        this.proceso.isCoordinador = true;
+                        this.coordinador = proceso;
+                        CoordinadorAnillo.actualizaEstatus(this.proceso);
+                    }
+
+                }
+
             }
-            CoordinarAnillo.actualizaEstatus(proceso);
-            this.recorreAnillo(proceso, false);
-        }
-
-        if (mensaje.getK() > this.proceso.getNumero()) {
-            this.proceso.setEstatus(mensaje.getDatos());
-            CoordinarAnillo.actualizaEstatus(this.proceso);
-            CoordinarAnillo.actualizaEstatus(mensaje.getK(), mensaje.getDatos(), mensaje.isEnEspera());
-
-            if(mensaje.isEnEspera())
-                
-            this.recorreAnillo(this.proceso, false);
-        }
-
-        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
+            
+        }else{
+            
+               if (mensaje.getDatos().contains("COORDINADOR")){
+                   CoordinadorAnillo.actualizaEstatus(this.proceso.puerto,"NO PARTICIPANTE",true); 
+                       CoordinadorAnillo.actualizaEstatus(mensaje.getK(),"",true); 
+                        this.recorreAnillo(proceso,mensaje);
+               }
+        
+    }
+        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinadorAnillo.procesos);
     }
 
-    public void recorreAnillo(Proceso P, boolean isDead) {
+    public void recorreAnillo(Proceso proceso, Mensaje mensaje) {
+        
         //proceso.setEstatus("PARTICIPANTE");
-        for (Proceso p : CoordinarAnillo.procesos) {
-            if (proceso.getNumero() == p.getNumero()) {
-                p.setEstatus(proceso.getEstatus());
-            }
-            if (p.isCoordinador && isDead) {
-                p.setEstatus("DEAD");
-            }
-            if (p.getNumero() == proceso.getNumero() + 1) {
-                mandaMensajeEleccion(proceso, p);
-            }
-
-        }
-        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
+        
+//        for (Proceso p : CoordinadorAnillo.procesos) {
+//            if (proceso.getNumero() == p.getNumero()) {
+//                p.setEstatus(proceso.getEstatus());
+//            }
+//            if (p.isCoordinador && isDead) {
+//                p.setEstatus("DEAD");
+//            }
+//            if (p.getNumero() == proceso.getNumero() + 1) {
+//                mandaMensajeEleccion(proceso, p);
+//            }
+//        }
+        Proceso siguiente=CoordinadorAnillo.getSiguienteProceso(proceso);
+        mandaMensajeEleccion(proceso, siguiente,  mensaje);
+        //UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinadorAnillo.procesos);
     }
 
-    public void mandaMensajeEleccion(Proceso proceso, Proceso siguiente) {
-        Mensaje m = new Mensaje();
-        m.setK(proceso.numero);
-        m.TIPO_MENSAJE = 3;
-        m.setDatos(proceso.getEstatus());
-        String response = "";
-        boolean isAlive = false;
+    public void mandaMensajeEleccion(Proceso proceso, Proceso siguiente, Mensaje mensaje) {
+        String response = "";       
         try {
             UDPClient ping = new UDPClient(siguiente.getDireccion(), siguiente.puerto, 5000);
-            response = ping.send(m);
+            response = ping.send(mensaje);
 
         } catch (SocketException ex) {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
@@ -341,16 +363,8 @@ public class CentralizadoMutex implements MensajeListen {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (response != null && response.contains("NO PARTICIPANTE")) {
-            for (Proceso p : CoordinarAnillo.procesos) {
-                if (p.getNumero() == CoordinarAnillo.procesoActual.getNumero()) {
-                    p.setEstatus("NO PARTICIPANTE");
-                }
-            }
-
-        }
-        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
+        }      
+        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinadorAnillo.procesos);
     }
 
     public void mandaMensajeCoordinador(Proceso proceso, Proceso siguiente) {
@@ -371,7 +385,7 @@ public class CentralizadoMutex implements MensajeListen {
         } catch (IOException ex) {
             Logger.getLogger(FrameCentralizado.class.getName()).log(Level.SEVERE, null, ex);
         }
-        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinarAnillo.procesos);
+        UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinadorAnillo.procesos);
     }
 
 }
