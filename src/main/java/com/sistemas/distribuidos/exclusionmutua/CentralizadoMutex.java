@@ -8,11 +8,14 @@ package com.sistemas.distribuidos.exclusionmutua;
 import com.sistemas.distribuidos.mbcp.UDPClient;
 import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
 import com.sistemas.distribuidos.mbcp.implementacion.MensajeListen;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +24,8 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+
 
 
 /**
@@ -45,11 +50,13 @@ public class CentralizadoMutex implements MensajeListen {
     private JLabel lblBloqueoCtaIsmael;
     private JLabel lblSaldoGinna;
     private JLabel lblSaldoIsmael;
+    private JLabel lblTokenRing;
 
     private JButton btnRegionCriticaGinna;
     private JButton btnRegionCriticaIsmael;
 
     private JList listProcesosActivos;
+       private JButton btnTokenRing;
 
     private CentralizadoMutex() {
 
@@ -61,7 +68,7 @@ public class CentralizadoMutex implements MensajeListen {
 
     }
 
-    public CentralizadoMutex(Proceso proceso, JList listColaPeticionesGinna, JList listColaPeticionesIsmael, JLabel lblEstatusCuentaGinna, JLabel lblBloqueoCtaIsmael, JButton btnRegionCriticaGinna, JButton btnRegionCriticaIsmael, JLabel lblSaldoGinna, JLabel lblSaldoIsmael, JList listProcesosActivos) {
+    public CentralizadoMutex(Proceso proceso, JList listColaPeticionesGinna, JList listColaPeticionesIsmael, JLabel lblEstatusCuentaGinna, JLabel lblBloqueoCtaIsmael, JButton btnRegionCriticaGinna, JButton btnRegionCriticaIsmael, JLabel lblSaldoGinna, JLabel lblSaldoIsmael, JList listProcesosActivos,JLabel lblTokenRing,JButton btnTokenRing) {
         this();
         if (proceso.isCoordinador) {
             this.coordinador = proceso;
@@ -79,6 +86,8 @@ public class CentralizadoMutex implements MensajeListen {
         this.lblSaldoGinna = lblSaldoGinna;
         this.lblSaldoIsmael = lblSaldoIsmael;
         this.listProcesosActivos = listProcesosActivos;
+        this.lblTokenRing=lblTokenRing;
+        this.btnTokenRing=btnTokenRing;
     }
 
     @Override
@@ -87,6 +96,10 @@ public class CentralizadoMutex implements MensajeListen {
         //Algortitmo anillo
         if (mensaje.TIPO_MENSAJE == 3) {
             this.recepcionAlgoritmoAnillo(mensaje);
+            return true;
+        }
+        if (mensaje.TIPO_MENSAJE == 4) {
+            this.recepcionTokenRing(mensaje);
             return true;
         }
 
@@ -332,23 +345,8 @@ public class CentralizadoMutex implements MensajeListen {
     }
 
     public void recorreAnillo(Proceso proceso, Mensaje mensaje) {
-        
-        //proceso.setEstatus("PARTICIPANTE");
-        
-//        for (Proceso p : CoordinadorAnillo.procesos) {
-//            if (proceso.getNumero() == p.getNumero()) {
-//                p.setEstatus(proceso.getEstatus());
-//            }
-//            if (p.isCoordinador && isDead) {
-//                p.setEstatus("DEAD");
-//            }
-//            if (p.getNumero() == proceso.getNumero() + 1) {
-//                mandaMensajeEleccion(proceso, p);
-//            }
-//        }
         Proceso siguiente=CoordinadorAnillo.getSiguienteProceso(proceso);
-        mandaMensajeEleccion(proceso, siguiente,  mensaje);
-        //UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinadorAnillo.procesos);
+        mandaMensajeEleccion(proceso, siguiente,  mensaje);       
     }
 
     public void mandaMensajeEleccion(Proceso proceso, Proceso siguiente, Mensaje mensaje) {
@@ -387,5 +385,23 @@ public class CentralizadoMutex implements MensajeListen {
         }
         UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinadorAnillo.procesos);
     }
+    
+      private void recepcionTokenRing(Mensaje mensaje) {
+          lblTokenRing.setText(String.format("PROCESO %d DISPONE DE REGIONES CRITICAS", this.proceso.numero));
+          btnRegionCriticaGinna.setEnabled(true);
+          btnRegionCriticaIsmael.setEnabled(true);
+          btnTokenRing.setEnabled(true);
+          ActionListener taskPerformer = (ActionEvent ae) -> {
+              btnRegionCriticaGinna.setEnabled(false);
+              btnRegionCriticaIsmael.setEnabled(false);
+              btnTokenRing.setEnabled(false);
+              lblTokenRing.setText(String.format("PROCESO %d LIBERA DE REGIONES CRITICAS", proceso.numero));  
+              recorreAnillo(proceso, mensaje);
+          };
+          Timer timer = new Timer(8000, taskPerformer);
+          timer.setRepeats(false);
+          timer.start();
+        
+      }
 
 }

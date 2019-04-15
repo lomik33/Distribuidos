@@ -69,6 +69,11 @@ public class FrameCentralizado extends javax.swing.JFrame {
         lblBloqueoCtaIsmael = new javax.swing.JLabel();
         btnMandarMensajeCoordinador = new javax.swing.JButton();
         btnNotificarNuevoCoordinador = new javax.swing.JButton();
+        btnToken = new javax.swing.JButton();
+        lblTokenRing = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -91,7 +96,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
 
         lblSaldoGinna.setText("$ ");
 
-        lblProcesoCoordinador.setText("COORDINADOR");
+        lblProcesoCoordinador.setText("1.- ALGORITMO COORDINADOR CENTRALIZADO");
 
         jScrollPane1.setViewportView(listProcesosActivos);
 
@@ -139,6 +144,19 @@ public class FrameCentralizado extends javax.swing.JFrame {
             }
         });
 
+        btnToken.setText("Token Ring");
+        btnToken.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTokenActionPerformed(evt);
+            }
+        });
+
+        lblTokenRing.setText("Token Ring");
+
+        jLabel3.setText("2.-ALGORTIMO PARA  ELECCION DE COORDINADOR POR ANILLO");
+
+        jLabel4.setText("3.- Algoritmo Token Ring");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -167,7 +185,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(lblCuentaBancariaIsmael)))
-                        .addGap(0, 80, Short.MAX_VALUE))
+                        .addGap(0, 83, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -185,7 +203,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(44, 44, 44)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 160, Short.MAX_VALUE)
                         .addComponent(jLabel2)
                         .addGap(43, 43, 43))
                     .addGroup(layout.createSequentialGroup()
@@ -193,21 +211,34 @@ public class FrameCentralizado extends javax.swing.JFrame {
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnToken, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(20, 20, 20))))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lblProcesosActivos)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblBloqueoCtaIsmael, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnMandarMensajeCoordinador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(405, 405, 405)
-                        .addComponent(btnNotificarNuevoCoordinador)))
-                .addContainerGap(116, Short.MAX_VALUE))
+                .addComponent(jSeparator1)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblBloqueoCtaIsmael, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblTokenRing, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(lblProcesosActivos)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnMandarMensajeCoordinador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(405, 405, 405)
+                            .addComponent(btnNotificarNuevoCoordinador)))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -243,7 +274,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnRegionCriticaIsmael)
                             .addComponent(lblSaldoIsmael)))
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
@@ -251,11 +282,21 @@ public class FrameCentralizado extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addGap(23, 23, 23)))
-                .addComponent(lblBloqueoCtaIsmael)
-                .addGap(18, 18, 18)
-                .addComponent(lblProcesosActivos)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(btnToken))
+                        .addGap(10, 10, 10)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblBloqueoCtaIsmael)
+                    .addComponent(lblTokenRing))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(3, 3, 3)
+                .addComponent(lblProcesosActivos)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
@@ -271,7 +312,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
         int procesoSeleccionado = (this.comboProcesos.getSelectedIndex() + 1);
         int puertoProceso = puertoInicial + procesoSeleccionado;
         Proceso proceso = new Proceso(procesoSeleccionado, puertoProceso);
-        centralizadoMutex = new CentralizadoMutex(proceso,this.listColaPeticionesGinna,this.listColaPeticionesIsmael,this.lblBloqueoCtaGinna,this.lblBloqueoCtaIsmael, this.btnRegionCriticaGinna,this.btnRegionCriticaIsmael,this.lblSaldoGinna,this.lblSaldoIsmael, this.listProcesosActivos);
+        centralizadoMutex = new CentralizadoMutex(proceso,this.listColaPeticionesGinna,this.listColaPeticionesIsmael,this.lblBloqueoCtaGinna,this.lblBloqueoCtaIsmael, this.btnRegionCriticaGinna,this.btnRegionCriticaIsmael,this.lblSaldoGinna,this.lblSaldoIsmael, this.listProcesosActivos, this.lblTokenRing,this.btnToken);
         try {
             udpServer = new UDPServer(proceso.getPuerto(), this.centralizadoMutex.mensajesRecibidos, this.centralizadoMutex);
         } catch (SocketException ex) {
@@ -322,20 +363,20 @@ public class FrameCentralizado extends javax.swing.JFrame {
         Mensaje mensaje = new Mensaje();
         mensaje.TIPO_MENSAJE = 3;
         mensaje.setDatos("IsAlive");
-        
+
         boolean isAlive = CoordinadorAnillo.isALive(centralizadoMutex.coordinador, mensaje);
-      
+
         if (!isAlive) {
-            this.centralizadoMutex.coordinador.setEstatus("DEAD"); 
+            this.centralizadoMutex.coordinador.setEstatus("DEAD");
             this.centralizadoMutex.coordinador.setIsDead(true);
             CoordinadorAnillo.actualizaEstatus(centralizadoMutex.coordinador);
             this.centralizadoMutex.proceso.setEstatus("PARTICIPANTE");
             mensaje.setDatos(this.centralizadoMutex.proceso.getEstatus());
-            mensaje.setK( this.centralizadoMutex.proceso.numero);
+            mensaje.setK(this.centralizadoMutex.proceso.numero);
             this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso, mensaje);
             JOptionPane.showMessageDialog(this, "DEAD");
         } else {
-            JOptionPane.showMessageDialog(this, "OK");            
+            JOptionPane.showMessageDialog(this, "OK");
         }
     }//GEN-LAST:event_btnMandarMensajeCoordinadorActionPerformed
 
@@ -348,13 +389,23 @@ public class FrameCentralizado extends javax.swing.JFrame {
         this.centralizadoMutex.proceso=CoordinadorAnillo.procesoActual;
         CoordinadorAnillo.actualizaEstatus(CoordinadorAnillo.procesoActual);         
         UtilsAlgoritmos.actualizaListaProcesos(listProcesosActivos, CoordinadorAnillo.procesos);  
-         Mensaje mensaje = new Mensaje();
+        Mensaje mensaje = new Mensaje();
         mensaje.TIPO_MENSAJE = 3;
         mensaje.setDatos("COORDINADOR");
         mensaje.setK(centralizadoMutex.proceso.numero);        
         this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso, mensaje);
         
     }//GEN-LAST:event_btnNotificarNuevoCoordinadorActionPerformed
+
+    private void btnTokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTokenActionPerformed
+        // TODO add your handling code here:
+        
+        Mensaje mensaje = new Mensaje();
+        mensaje.TIPO_MENSAJE = 4;
+        mensaje.setDatos(String.format("%f,%f", CentralizadoMutex.saldoGinna,CentralizadoMutex.saldoIsmael));
+        this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso,mensaje);       
+        
+    }//GEN-LAST:event_btnTokenActionPerformed
 
    
     
@@ -399,12 +450,16 @@ public class FrameCentralizado extends javax.swing.JFrame {
     private javax.swing.JButton btnNotificarNuevoCoordinador;
     private javax.swing.JButton btnRegionCriticaGinna;
     private javax.swing.JButton btnRegionCriticaIsmael;
+    private javax.swing.JButton btnToken;
     private javax.swing.JComboBox<String> comboProcesos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblBloqueoCtaGinna;
     private javax.swing.JLabel lblBloqueoCtaIsmael;
     private javax.swing.JLabel lblCoordinador;
@@ -416,6 +471,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
     private javax.swing.JLabel lblSaldoGinna;
     private javax.swing.JLabel lblSaldoIsmael;
     private javax.swing.JLabel lblSeleccionarProceso;
+    private javax.swing.JLabel lblTokenRing;
     private javax.swing.JList<String> listColaPeticionesGinna;
     private javax.swing.JList<String> listColaPeticionesIsmael;
     private javax.swing.JList<String> listProcesosActivos;
