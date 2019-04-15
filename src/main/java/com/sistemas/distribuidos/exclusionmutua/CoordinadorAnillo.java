@@ -73,10 +73,10 @@ public class CoordinadorAnillo implements MensajeListen {
          switch(proceso.numero){            
              case 6:
                  
-                 Proceso primero=CoordinadorAnillo.getProceso(1);
-                 if(!isALive(primero,null))                
-                    siguiente=2;
-                 else
+//                 Proceso primero=CoordinadorAnillo.getProceso(1);
+//                 if(!isALive(primero,null))                
+//                    siguiente=2;
+//                 else
                      siguiente=1;
                  
                  
