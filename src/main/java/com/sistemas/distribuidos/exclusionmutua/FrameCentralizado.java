@@ -69,11 +69,15 @@ public class FrameCentralizado extends javax.swing.JFrame {
         lblBloqueoCtaIsmael = new javax.swing.JLabel();
         btnMandarMensajeCoordinador = new javax.swing.JButton();
         btnNotificarNuevoCoordinador = new javax.swing.JButton();
-        btnToken = new javax.swing.JButton();
-        lblTokenRing = new javax.swing.JLabel();
+        btnTokenGinna = new javax.swing.JButton();
+        lblTokenRingGinna = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        btnTokenIsmael = new javax.swing.JButton();
+        lblTokenRingIsmael = new javax.swing.JLabel();
+        toggleSolicitaGinna = new javax.swing.JToggleButton();
+        toggleSolicitaIsmael = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -144,18 +148,41 @@ public class FrameCentralizado extends javax.swing.JFrame {
             }
         });
 
-        btnToken.setText("Token Ring");
-        btnToken.addActionListener(new java.awt.event.ActionListener() {
+        btnTokenGinna.setText("Token Ring Ginna");
+        btnTokenGinna.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTokenActionPerformed(evt);
+                btnTokenGinnaActionPerformed(evt);
             }
         });
 
-        lblTokenRing.setText("Token Ring");
+        lblTokenRingGinna.setText("Token Ring Ginna");
 
         jLabel3.setText("2.-ALGORTIMO PARA  ELECCION DE COORDINADOR POR ANILLO");
 
         jLabel4.setText("3.- Algoritmo Token Ring");
+
+        btnTokenIsmael.setText("Token Ring Ismael");
+        btnTokenIsmael.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTokenIsmaelActionPerformed(evt);
+            }
+        });
+
+        lblTokenRingIsmael.setText("Token Ring Ismael");
+
+        toggleSolicitaGinna.setText("SOLICITA");
+        toggleSolicitaGinna.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggleSolicitaGinnaActionPerformed(evt);
+            }
+        });
+
+        toggleSolicitaIsmael.setText("SOLICITA");
+        toggleSolicitaIsmael.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggleSolicitaIsmaelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -185,7 +212,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(lblCuentaBancariaIsmael)))
-                        .addGap(0, 83, Short.MAX_VALUE))
+                        .addGap(0, 13, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -203,29 +230,32 @@ public class FrameCentralizado extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(44, 44, 44)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 160, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel2)
                         .addGap(43, 43, 43))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2)
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnToken, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(20, 20, 20))))
+                        .addGap(56, 56, 56)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnTokenGinna, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(toggleSolicitaGinna))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnTokenIsmael, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(toggleSolicitaIsmael)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jSeparator1)
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblBloqueoCtaIsmael, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblTokenRing, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -238,6 +268,15 @@ public class FrameCentralizado extends javax.swing.JFrame {
                             .addGap(405, 405, 405)
                             .addComponent(btnNotificarNuevoCoordinador)))
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblBloqueoCtaIsmael, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(88, 88, 88)
+                        .addComponent(lblTokenRingGinna, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblTokenRingIsmael, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -285,11 +324,18 @@ public class FrameCentralizado extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
-                            .addComponent(btnToken))
-                        .addGap(10, 10, 10)))
+                            .addComponent(btnTokenGinna)
+                            .addComponent(toggleSolicitaGinna))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnTokenIsmael)
+                            .addComponent(toggleSolicitaIsmael))
+                        .addGap(39, 39, 39)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblBloqueoCtaIsmael)
-                    .addComponent(lblTokenRing))
+                    .addComponent(lblTokenRingGinna))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblTokenRingIsmael)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -312,7 +358,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
         int procesoSeleccionado = (this.comboProcesos.getSelectedIndex() + 1);
         int puertoProceso = puertoInicial + procesoSeleccionado;
         Proceso proceso = new Proceso(procesoSeleccionado, puertoProceso);
-        centralizadoMutex = new CentralizadoMutex(proceso, this.listColaPeticionesGinna, this.listColaPeticionesIsmael, this.lblBloqueoCtaGinna, this.lblBloqueoCtaIsmael, this.btnRegionCriticaGinna, this.btnRegionCriticaIsmael, this.lblSaldoGinna, this.lblSaldoIsmael, this.listProcesosActivos, this.lblTokenRing, this.btnToken);
+        centralizadoMutex = new CentralizadoMutex(proceso, this.listColaPeticionesGinna, this.listColaPeticionesIsmael, this.lblBloqueoCtaGinna, this.lblBloqueoCtaIsmael, this.btnRegionCriticaGinna, this.btnRegionCriticaIsmael, this.lblSaldoGinna, this.lblSaldoIsmael, this.listProcesosActivos, this.lblTokenRingGinna,this.lblTokenRingIsmael, this.btnTokenGinna,this.btnTokenIsmael);
         try {
             udpServer = new UDPServer(proceso.getPuerto(), this.centralizadoMutex.mensajesRecibidos, this.centralizadoMutex);
         } catch (SocketException ex) {
@@ -409,17 +455,36 @@ public class FrameCentralizado extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnNotificarNuevoCoordinadorActionPerformed
 
-    private void btnTokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTokenActionPerformed
+    private void btnTokenGinnaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTokenGinnaActionPerformed
         // TODO add your handling code here:
         this.btnRegionCriticaGinna.setEnabled(false);
-        this.btnRegionCriticaIsmael.setEnabled(false);
-        this.btnToken.setEnabled(false);
+        this.btnTokenGinna.setEnabled(false);
         Mensaje mensaje = new Mensaje();
         mensaje.TIPO_MENSAJE = 4;
-        mensaje.setDatos(String.format("%f,%f", CentralizadoMutex.saldoGinna, CentralizadoMutex.saldoIsmael));
+        mensaje.setDatos(String.format("GINNA,%f", CentralizadoMutex.saldoGinna));
         this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso, mensaje);
 
-    }//GEN-LAST:event_btnTokenActionPerformed
+    }//GEN-LAST:event_btnTokenGinnaActionPerformed
+
+    private void btnTokenIsmaelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTokenIsmaelActionPerformed
+        // TODO add your handling code here:
+        this.btnRegionCriticaIsmael.setEnabled(false);
+        this.btnTokenIsmael.setEnabled(false);
+        Mensaje mensaje = new Mensaje();
+        mensaje.TIPO_MENSAJE = 4;
+        mensaje.setDatos(String.format("ISMAEL,%f",  CentralizadoMutex.saldoIsmael));
+        this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso, mensaje);
+    }//GEN-LAST:event_btnTokenIsmaelActionPerformed
+
+    private void toggleSolicitaGinnaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleSolicitaGinnaActionPerformed
+        // TODO add your handling code here:
+        this.centralizadoMutex.solicitaGinna=this.toggleSolicitaGinna.isSelected();
+    }//GEN-LAST:event_toggleSolicitaGinnaActionPerformed
+
+    private void toggleSolicitaIsmaelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleSolicitaIsmaelActionPerformed
+        // TODO add your handling code here:
+          this.centralizadoMutex.solicitaIsmael=this.toggleSolicitaIsmael.isSelected();
+    }//GEN-LAST:event_toggleSolicitaIsmaelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -462,7 +527,8 @@ public class FrameCentralizado extends javax.swing.JFrame {
     private javax.swing.JButton btnNotificarNuevoCoordinador;
     private javax.swing.JButton btnRegionCriticaGinna;
     private javax.swing.JButton btnRegionCriticaIsmael;
-    private javax.swing.JButton btnToken;
+    private javax.swing.JButton btnTokenGinna;
+    private javax.swing.JButton btnTokenIsmael;
     private javax.swing.JComboBox<String> comboProcesos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -483,9 +549,12 @@ public class FrameCentralizado extends javax.swing.JFrame {
     private javax.swing.JLabel lblSaldoGinna;
     private javax.swing.JLabel lblSaldoIsmael;
     private javax.swing.JLabel lblSeleccionarProceso;
-    private javax.swing.JLabel lblTokenRing;
+    private javax.swing.JLabel lblTokenRingGinna;
+    private javax.swing.JLabel lblTokenRingIsmael;
     private javax.swing.JList<String> listColaPeticionesGinna;
     private javax.swing.JList<String> listColaPeticionesIsmael;
     private javax.swing.JList<String> listProcesosActivos;
+    private javax.swing.JToggleButton toggleSolicitaGinna;
+    private javax.swing.JToggleButton toggleSolicitaIsmael;
     // End of variables declaration//GEN-END:variables
 }

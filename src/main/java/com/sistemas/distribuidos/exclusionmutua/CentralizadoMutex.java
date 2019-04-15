@@ -50,14 +50,19 @@ public class CentralizadoMutex implements MensajeListen {
     private JLabel lblBloqueoCtaIsmael;
     private JLabel lblSaldoGinna;
     private JLabel lblSaldoIsmael;
-    private JLabel lblTokenRing;
+    private JLabel lblTokenRingGinna;
+    private JLabel lblTokenRingIsmael;
 
     private JButton btnRegionCriticaGinna;
     private JButton btnRegionCriticaIsmael;
 
     private JList listProcesosActivos;
-    private JButton btnTokenRing;
+    private JButton btnTokenRingGinna;
+    private JButton btnTokenRingIsmael;
     private boolean isTokenRing;
+    
+    public boolean solicitaGinna;
+    public boolean solicitaIsmael;
 
     private CentralizadoMutex() {
 
@@ -69,7 +74,7 @@ public class CentralizadoMutex implements MensajeListen {
 
     }
 
-    public CentralizadoMutex(Proceso proceso, JList listColaPeticionesGinna, JList listColaPeticionesIsmael, JLabel lblEstatusCuentaGinna, JLabel lblBloqueoCtaIsmael, JButton btnRegionCriticaGinna, JButton btnRegionCriticaIsmael, JLabel lblSaldoGinna, JLabel lblSaldoIsmael, JList listProcesosActivos,JLabel lblTokenRing,JButton btnTokenRing) {
+    public CentralizadoMutex(Proceso proceso, JList listColaPeticionesGinna, JList listColaPeticionesIsmael, JLabel lblEstatusCuentaGinna, JLabel lblBloqueoCtaIsmael, JButton btnRegionCriticaGinna, JButton btnRegionCriticaIsmael, JLabel lblSaldoGinna, JLabel lblSaldoIsmael, JList listProcesosActivos,JLabel lblTokenRingGinna,JLabel lblTokenRingIsmael,JButton btnTokenRingGinna, JButton btnTokenRingIsmael) {
         this();
         if (proceso.isCoordinador) {
             this.coordinador = proceso;
@@ -87,8 +92,10 @@ public class CentralizadoMutex implements MensajeListen {
         this.lblSaldoGinna = lblSaldoGinna;
         this.lblSaldoIsmael = lblSaldoIsmael;
         this.listProcesosActivos = listProcesosActivos;
-        this.lblTokenRing=lblTokenRing;
-        this.btnTokenRing=btnTokenRing;
+        this.lblTokenRingGinna=lblTokenRingGinna;
+        this.btnTokenRingGinna=btnTokenRingGinna;
+        this.btnTokenRingIsmael=btnTokenRingIsmael;
+               this.lblTokenRingIsmael=lblTokenRingIsmael;
     }
 
     @Override
@@ -387,34 +394,57 @@ public class CentralizadoMutex implements MensajeListen {
         UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinadorAnillo.procesos);
     }
     
+     Timer timerGinna;
+      Timer timerIsmael;
       private void recepcionTokenRing(Mensaje mensaje) {
-          
-          String datos[]=mensaje.getDatos().split(",");
-          if(datos.length>=2){
-              CentralizadoMutex.saldoGinna=Double.parseDouble(datos[0]);
-              CentralizadoMutex.saldoIsmael=Double.parseDouble(datos[1]);
-          }
-          this.lblSaldoGinna.setText(Double.toString( CentralizadoMutex.saldoGinna));
-          this.lblSaldoIsmael.setText(Double.toString( CentralizadoMutex.saldoIsmael));
-        
-          this.isTokenRing=true;
-          lblTokenRing.setText(String.format("PROCESO %d DISPONE DE REGIONES CRITICAS", this.proceso.numero));
-          btnRegionCriticaGinna.setEnabled(true);
-          btnRegionCriticaIsmael.setEnabled(true);
-          btnTokenRing.setEnabled(true);
-          ActionListener taskPerformer = (ActionEvent ae) -> {
-              btnRegionCriticaGinna.setEnabled(false);
-              btnRegionCriticaIsmael.setEnabled(false);
-              btnTokenRing.setEnabled(false);
-              lblTokenRing.setText(String.format("PROCESO %d LIBERA DE REGIONES CRITICAS", proceso.numero));  
-              mensaje.setDatos(String.format("%f,%f", CentralizadoMutex.saldoGinna,CentralizadoMutex.saldoIsmael));
-              recorreAnillo(proceso, mensaje);
-          };
-          Timer timer = new Timer(10000, taskPerformer);
-          timer.setRepeats(false);
-          timer.start();
-        
-      }
+
+        String datos[] = mensaje.getDatos().split(",");
+        double saldo = 0;
+        String token = "";
+        if (datos.length >= 2) {
+            token = datos[0];
+            saldo = Double.parseDouble(datos[1]);
+        }
+        if (token.equals("GINNA")) {
+            CentralizadoMutex.saldoGinna = saldo;
+            this.lblSaldoGinna.setText(Double.toString(CentralizadoMutex.saldoGinna));
+            btnRegionCriticaGinna.setEnabled(true);
+            btnTokenRingGinna.setEnabled(true);
+            ActionListener taskPerformer = (ActionEvent ae) -> {
+                btnRegionCriticaGinna.setEnabled(false);
+                btnTokenRingGinna.setEnabled(false);
+                lblTokenRingGinna.setText(String.format("PROCESO %d LIBERA DE REGION CRITICA GINNA", proceso.numero));
+                mensaje.setDatos(String.format("GINNA,%f", CentralizadoMutex.saldoGinna));
+                recorreAnillo(proceso, mensaje);
+            };
+            Timer timer = new Timer(this.solicitaGinna? 10000:1000, taskPerformer);
+            timer.setRepeats(false);
+            timer.start();
+            lblTokenRingGinna.setText(String.format("PROCESO %d DISPONE DE REGION CRITICA GINNA", this.proceso.numero));
+        } else {
+            if (token.equals("ISMAEL")) {
+                CentralizadoMutex.saldoIsmael = saldo;
+                this.lblSaldoIsmael.setText(Double.toString(CentralizadoMutex.saldoIsmael));
+                btnRegionCriticaIsmael.setEnabled(true);
+                 btnRegionCriticaIsmael.setEnabled(true);
+            btnTokenRingIsmael.setEnabled(true);
+            ActionListener taskPerformer = (ActionEvent ae) -> {
+                btnRegionCriticaIsmael.setEnabled(false);
+                btnTokenRingIsmael.setEnabled(false);
+                lblTokenRingIsmael.setText(String.format("PROCESO %d LIBERA DE REGION CRITICA ISMAEL", proceso.numero));
+                mensaje.setDatos(String.format("ISMAEL,%f", CentralizadoMutex.saldoIsmael));
+                recorreAnillo(proceso, mensaje);
+            };
+            Timer timer = new Timer(this.solicitaIsmael?10000:1000, taskPerformer);
+            timer.setRepeats(false);
+            timer.start();
+             lblTokenRingIsmael.setText(String.format("PROCESO %d DISPONE DE REGION CRITICA ISMAEL", this.proceso.numero));
+            }
+        }
+
+        this.isTokenRing = true;
+
+    }
 
     public boolean isIsTokenRing() {
         return isTokenRing;
