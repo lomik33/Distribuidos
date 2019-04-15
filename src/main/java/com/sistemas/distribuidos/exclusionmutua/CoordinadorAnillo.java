@@ -87,13 +87,12 @@ public class CoordinadorAnillo implements MensajeListen {
                  break;                     
          }
          Proceso procesoSiguiente=CoordinadorAnillo.getProceso(siguiente);
-//         boolean isAlive=!proceso.isDead;
-//         if(isAlive)
-//             return procesoSiguiente;         
-//         else
-//             return getSiguienteProceso(CoordinadorAnillo.getProceso(siguiente+1));
-return procesoSiguiente;
-         
+         boolean isAlive=isALive(procesoSiguiente,null);
+         if(isAlive)
+             return procesoSiguiente;         
+         else
+             return getSiguienteProceso(procesoSiguiente);
+        
      }
      
      
