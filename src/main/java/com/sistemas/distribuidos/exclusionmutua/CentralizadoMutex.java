@@ -158,7 +158,7 @@ public class CentralizadoMutex implements MensajeListen {
                 public void run() {
 
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(15000);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -209,7 +209,7 @@ public class CentralizadoMutex implements MensajeListen {
                 public void run() {
 
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(15000);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                     }
