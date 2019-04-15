@@ -72,7 +72,15 @@ public class CoordinadorAnillo implements MensajeListen {
          int siguiente=proceso.numero;
          switch(proceso.numero){            
              case 6:
-                 siguiente=2;
+                 
+                 Proceso primero=CoordinadorAnillo.getProceso(1);
+                 if(!isALive(primero,null))                
+                    siguiente=2;
+                 else
+                     siguiente=1;
+                 
+                 
+                 
                  break;
              default:
                  siguiente++;
@@ -93,6 +101,11 @@ return procesoSiguiente;
          boolean centinela=false;
          String response = "";
            try {
+               if(mensaje==null){
+                   mensaje=new Mensaje();
+                   mensaje.setDatos("isAlive");
+                   mensaje.setK(proceso.getNumero());
+               }
             UDPClient ping = new UDPClient(proceso.getDireccion(), proceso.puerto, 5000);
             response = ping.send(mensaje);
             if(!response.equals(""))

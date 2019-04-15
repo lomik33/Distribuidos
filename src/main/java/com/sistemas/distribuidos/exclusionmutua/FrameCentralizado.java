@@ -32,7 +32,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
      */
     public FrameCentralizado() {
         initComponents();
-      
+
     }
 
     /**
@@ -312,7 +312,7 @@ public class FrameCentralizado extends javax.swing.JFrame {
         int procesoSeleccionado = (this.comboProcesos.getSelectedIndex() + 1);
         int puertoProceso = puertoInicial + procesoSeleccionado;
         Proceso proceso = new Proceso(procesoSeleccionado, puertoProceso);
-        centralizadoMutex = new CentralizadoMutex(proceso,this.listColaPeticionesGinna,this.listColaPeticionesIsmael,this.lblBloqueoCtaGinna,this.lblBloqueoCtaIsmael, this.btnRegionCriticaGinna,this.btnRegionCriticaIsmael,this.lblSaldoGinna,this.lblSaldoIsmael, this.listProcesosActivos, this.lblTokenRing,this.btnToken);
+        centralizadoMutex = new CentralizadoMutex(proceso, this.listColaPeticionesGinna, this.listColaPeticionesIsmael, this.lblBloqueoCtaGinna, this.lblBloqueoCtaIsmael, this.btnRegionCriticaGinna, this.btnRegionCriticaIsmael, this.lblSaldoGinna, this.lblSaldoIsmael, this.listProcesosActivos, this.lblTokenRing, this.btnToken);
         try {
             udpServer = new UDPServer(proceso.getPuerto(), this.centralizadoMutex.mensajesRecibidos, this.centralizadoMutex);
         } catch (SocketException ex) {
@@ -327,36 +327,48 @@ public class FrameCentralizado extends javax.swing.JFrame {
         this.lblCoordinador.setText(String.format("PROCESO: %s en %s:%s", Integer.toString(this.centralizadoMutex.coordinador.getNumero()), this.centralizadoMutex.coordinador.getDireccion(), Integer.toString(this.centralizadoMutex.coordinador.getPuerto())).toUpperCase());
         this.lblSeleccionarProceso.setText(String.format("PROCESO ACTIVO: %s en %s:%s", Integer.toString(proceso.getNumero()), proceso.getDireccion(), Integer.toString(proceso.getPuerto())).toUpperCase());
 
-        if(!this.centralizadoMutex.proceso.isCoordinador){
+        if (!this.centralizadoMutex.proceso.isCoordinador) {
             this.listColaPeticionesGinna.setEnabled(false);
             this.listColaPeticionesIsmael.setEnabled(false);
         }
         this.lblSaldoGinna.setText(String.format("Saldo: $%f", centralizadoMutex.saldoGinna));
         this.lblSaldoIsmael.setText(String.format("Saldo: $%f", centralizadoMutex.saldoIsmael));
-       
-        for(int i=0;i<this.comboProcesos.getItemCount();i++){
-             int ps = (i + 1);
-             int port = puertoInicial + ps;
-             
-             if(ps!=proceso.getNumero())
-                         CoordinadorAnillo.procesos.add(new Proceso(ps, port));
-             else  
-                 CoordinadorAnillo.procesos.add(proceso);
-            
+
+        for (int i = 0; i < this.comboProcesos.getItemCount(); i++) {
+            int ps = (i + 1);
+            int port = puertoInicial + ps;
+
+            if (ps != proceso.getNumero()) {
+                CoordinadorAnillo.procesos.add(new Proceso(ps, port));
+            } else {
+                CoordinadorAnillo.procesos.add(proceso);
+            }
+
         }
-        CoordinadorAnillo.procesoActual=proceso;
+        CoordinadorAnillo.procesoActual = proceso;
         UtilsAlgoritmos.actualizaListaProcesos(listProcesosActivos, CoordinadorAnillo.procesos);
     }//GEN-LAST:event_btnLanzarActionPerformed
 
     private void btnRegionCriticaIsmaelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegionCriticaIsmaelActionPerformed
         // TODO add your handling code here:
-       this.centralizadoMutex.enviarMensaje(2);
+        if (this.centralizadoMutex.isIsTokenRing()) {
+            CentralizadoMutex.saldoIsmael--;
+            this.lblSaldoIsmael.setText(Double.toString(CentralizadoMutex.saldoIsmael));
+        } else {
+            this.centralizadoMutex.enviarMensaje(2);
+        }
     }//GEN-LAST:event_btnRegionCriticaIsmaelActionPerformed
 
     private void btnRegionCriticaGinnaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegionCriticaGinnaActionPerformed
         // TODO add your handling code here:
-        this.centralizadoMutex.enviarMensaje(1);
-      
+        if (this.centralizadoMutex.isIsTokenRing()) {
+            CentralizadoMutex.saldoGinna--;
+            this.lblSaldoGinna.setText(Double.toString(CentralizadoMutex.saldoGinna));
+
+        } else {
+            this.centralizadoMutex.enviarMensaje(1);
+        }
+
     }//GEN-LAST:event_btnRegionCriticaGinnaActionPerformed
 
     private void btnMandarMensajeCoordinadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMandarMensajeCoordinadorActionPerformed
@@ -384,31 +396,31 @@ public class FrameCentralizado extends javax.swing.JFrame {
         // TODO add your handling code here:
         CoordinadorAnillo.procesoActual.setEstatus("");
         CoordinadorAnillo.procesoActual.setIsCoordinador(true);
-        
-        this.centralizadoMutex.coordinador=CoordinadorAnillo.procesoActual;
-        this.centralizadoMutex.proceso=CoordinadorAnillo.procesoActual;
-        CoordinadorAnillo.actualizaEstatus(CoordinadorAnillo.procesoActual);         
-        UtilsAlgoritmos.actualizaListaProcesos(listProcesosActivos, CoordinadorAnillo.procesos);  
+
+        this.centralizadoMutex.coordinador = CoordinadorAnillo.procesoActual;
+        this.centralizadoMutex.proceso = CoordinadorAnillo.procesoActual;
+        CoordinadorAnillo.actualizaEstatus(CoordinadorAnillo.procesoActual);
+        UtilsAlgoritmos.actualizaListaProcesos(listProcesosActivos, CoordinadorAnillo.procesos);
         Mensaje mensaje = new Mensaje();
         mensaje.TIPO_MENSAJE = 3;
         mensaje.setDatos("COORDINADOR");
-        mensaje.setK(centralizadoMutex.proceso.numero);        
+        mensaje.setK(centralizadoMutex.proceso.numero);
         this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso, mensaje);
-        
+
     }//GEN-LAST:event_btnNotificarNuevoCoordinadorActionPerformed
 
     private void btnTokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTokenActionPerformed
         // TODO add your handling code here:
-        
+        this.btnRegionCriticaGinna.setEnabled(false);
+        this.btnRegionCriticaIsmael.setEnabled(false);
+        this.btnToken.setEnabled(false);
         Mensaje mensaje = new Mensaje();
         mensaje.TIPO_MENSAJE = 4;
-        mensaje.setDatos(String.format("%f,%f", CentralizadoMutex.saldoGinna,CentralizadoMutex.saldoIsmael));
-        this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso,mensaje);       
-        
+        mensaje.setDatos(String.format("%f,%f", CentralizadoMutex.saldoGinna, CentralizadoMutex.saldoIsmael));
+        this.centralizadoMutex.recorreAnillo(this.centralizadoMutex.proceso, mensaje);
+
     }//GEN-LAST:event_btnTokenActionPerformed
 
-   
-    
     /**
      * @param args the command line arguments
      */

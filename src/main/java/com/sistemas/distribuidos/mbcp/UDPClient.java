@@ -101,12 +101,12 @@ public class UDPClient {
             direcciones.put(5, "192.168.16.173");
             direcciones.put(6, "192.168.16.173");
         
-//                direcciones.put(1, "192.168.1.17");
-//                direcciones.put(2, "192.168.1.17");
-//                direcciones.put(3, "192.168.1.17");
-//                direcciones.put(4, "192.168.1.12");
-//                direcciones.put(5, "192.168.1.12");
-//                direcciones.put(6, "192.168.1.12");
+//  direcciones.put(1, "localhost");
+//            direcciones.put(2, "localhost");
+//            direcciones.put(3, "localhost");
+//            direcciones.put(4, "localhost");
+//            direcciones.put(5, "localhost");
+//            direcciones.put(6, "localhost");
        
 
      }

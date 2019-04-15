@@ -56,7 +56,8 @@ public class CentralizadoMutex implements MensajeListen {
     private JButton btnRegionCriticaIsmael;
 
     private JList listProcesosActivos;
-       private JButton btnTokenRing;
+    private JButton btnTokenRing;
+    private boolean isTokenRing;
 
     private CentralizadoMutex() {
 
@@ -387,6 +388,16 @@ public class CentralizadoMutex implements MensajeListen {
     }
     
       private void recepcionTokenRing(Mensaje mensaje) {
+          
+          String datos[]=mensaje.getDatos().split(",");
+          if(datos.length>=2){
+              CentralizadoMutex.saldoGinna=Double.parseDouble(datos[0]);
+              CentralizadoMutex.saldoIsmael=Double.parseDouble(datos[1]);
+          }
+          this.lblSaldoGinna.setText(Double.toString( CentralizadoMutex.saldoGinna));
+          this.lblSaldoIsmael.setText(Double.toString( CentralizadoMutex.saldoIsmael));
+        
+          this.isTokenRing=true;
           lblTokenRing.setText(String.format("PROCESO %d DISPONE DE REGIONES CRITICAS", this.proceso.numero));
           btnRegionCriticaGinna.setEnabled(true);
           btnRegionCriticaIsmael.setEnabled(true);
@@ -396,12 +407,22 @@ public class CentralizadoMutex implements MensajeListen {
               btnRegionCriticaIsmael.setEnabled(false);
               btnTokenRing.setEnabled(false);
               lblTokenRing.setText(String.format("PROCESO %d LIBERA DE REGIONES CRITICAS", proceso.numero));  
+              mensaje.setDatos(String.format("%f,%f", CentralizadoMutex.saldoGinna,CentralizadoMutex.saldoIsmael));
               recorreAnillo(proceso, mensaje);
           };
-          Timer timer = new Timer(8000, taskPerformer);
+          Timer timer = new Timer(10000, taskPerformer);
           timer.setRepeats(false);
           timer.start();
         
       }
+
+    public boolean isIsTokenRing() {
+        return isTokenRing;
+    }
+
+    public void setIsTokenRing(boolean isTokenRing) {
+        this.isTokenRing = isTokenRing;
+    }
+      
 
 }
