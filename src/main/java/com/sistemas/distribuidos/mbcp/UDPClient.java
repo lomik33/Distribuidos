@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author lomik
+ * @author ismael
  */
 public class UDPClient {
 

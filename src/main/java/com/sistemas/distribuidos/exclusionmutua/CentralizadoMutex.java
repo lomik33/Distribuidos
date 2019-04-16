@@ -30,7 +30,7 @@ import javax.swing.Timer;
 
 /**
  *
- * @author lomik
+ * @author ismael
  */
 public class CentralizadoMutex implements MensajeListen {
 

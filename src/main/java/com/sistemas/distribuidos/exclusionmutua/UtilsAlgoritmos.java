@@ -18,7 +18,7 @@ import javax.swing.JList;
 
 /**
  *
- * @author Ginna Monserrat
+ * @author Ginna
  */
 public  class UtilsAlgoritmos {
     

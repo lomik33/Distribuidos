@@ -13,7 +13,7 @@ import javax.swing.JList;
 
 /**
  *
- * @author lomik
+ * @author ismael
  */
 public class MBCPAlgoritmo implements MensajeListen {
  

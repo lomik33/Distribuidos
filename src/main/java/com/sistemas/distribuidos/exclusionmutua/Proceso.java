@@ -9,7 +9,7 @@ import com.sistemas.distribuidos.mbcp.UDPClient;
 
 /**
  *
- * @author Ginna Monserrat
+ * @author Ginna
  */
 public class Proceso {
     int numero;

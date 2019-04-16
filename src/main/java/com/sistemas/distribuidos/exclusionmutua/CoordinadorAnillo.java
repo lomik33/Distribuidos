@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author lomik
+ * @author Ginna
  */
 public class CoordinadorAnillo implements MensajeListen {
     public static List<Proceso> procesos;

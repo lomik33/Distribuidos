@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
- * @author lomik
+ * @author ismael
  */
 public class Mensaje implements Serializable {
 
