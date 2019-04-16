@@ -89,19 +89,19 @@ public class UDPClient {
     static {
         direcciones = new HashMap();
 
-//            direcciones.put(1, "192.168.19.140");
-//            direcciones.put(2, "192.168.19.140");
-//            direcciones.put(3, "192.168.19.91");
-//            direcciones.put(4, "192.168.19.91");
-//            direcciones.put(5, "192.168.16.173");
-//            direcciones.put(6, "192.168.16.173");
+            direcciones.put(1, "192.168.19.140");
+            direcciones.put(2, "192.168.19.140");
+            direcciones.put(3, "192.168.19.91");
+            direcciones.put(4, "192.168.19.91");
+            direcciones.put(5, "192.168.16.173");
+            direcciones.put(6, "192.168.16.173");
 //        
-        direcciones.put(1, "localhost");
-        direcciones.put(2, "localhost");
-        direcciones.put(3, "localhost");
-        direcciones.put(4, "localhost");
-        direcciones.put(5, "localhost");
-        direcciones.put(6, "localhost");
+//        direcciones.put(1, "localhost");
+//        direcciones.put(2, "localhost");
+//        direcciones.put(3, "localhost");
+//        direcciones.put(4, "localhost");
+//        direcciones.put(5, "localhost");
+//        direcciones.put(6, "localhost");
 
     }
 
