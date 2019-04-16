@@ -394,8 +394,7 @@ public class CentralizadoMutex implements MensajeListen {
         UtilsAlgoritmos.actualizaListaProcesos(this.listProcesosActivos, CoordinadorAnillo.procesos);
     }
     
-     Timer timerGinna;
-      Timer timerIsmael;
+    
       private void recepcionTokenRing(Mensaje mensaje) {
 
         String datos[] = mensaje.getDatos().split(",");
@@ -426,7 +425,6 @@ public class CentralizadoMutex implements MensajeListen {
                 CentralizadoMutex.saldoIsmael = saldo;
                 this.lblSaldoIsmael.setText(Double.toString(CentralizadoMutex.saldoIsmael));
                 btnRegionCriticaIsmael.setEnabled(true);
-                 btnRegionCriticaIsmael.setEnabled(true);
             btnTokenRingIsmael.setEnabled(true);
             ActionListener taskPerformer = (ActionEvent ae) -> {
                 btnRegionCriticaIsmael.setEnabled(false);
