@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author lomik
+ * @author Ginna Monserrat
  */
 public class FrameCentralizado extends javax.swing.JFrame {
 

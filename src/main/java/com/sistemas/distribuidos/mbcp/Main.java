@@ -10,7 +10,7 @@ import java.net.SocketException;
 
 /**
  *
- * @author lomik
+ * @author Ginna Monserrat
  */
 public class Main {
     
