@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author lomik
+ * @author ismael
  */
 public class UDPServer implements Runnable {
 
