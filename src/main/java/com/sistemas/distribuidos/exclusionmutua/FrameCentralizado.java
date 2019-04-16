@@ -5,12 +5,9 @@
  */
 package com.sistemas.distribuidos.exclusionmutua;
 
-import com.sistemas.distribuidos.mbcp.UDPClient;
 import com.sistemas.distribuidos.mbcp.UDPServer;
 import com.sistemas.distribuidos.mbcp.implementacion.Mensaje;
-import java.io.IOException;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
