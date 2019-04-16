@@ -21,79 +21,74 @@ import java.util.HashMap;
  * @author lomik
  */
 public class UDPClient {
-    
-     private  DatagramSocket socket;
-     private byte[] buffer;
-     private InetAddress servidor;
-     int serverPort;
-     
-     
-     public UDPClient(String direccionHost,int serverPort) throws SocketException, UnknownHostException{
-            socket = new DatagramSocket();
-            //socket.setSoTimeout(puerto);
-            buffer = new byte[1024];
-           servidor = InetAddress.getByName(direccionHost);
-           this.serverPort=serverPort;
-           
-            
-     }
-     
-        public UDPClient(String direccionHost,int serverPort, int timeout) throws SocketException, UnknownHostException{
-            socket = new DatagramSocket();
-            socket.setSoTimeout(timeout);
-            //socket.setSoTimeout(puerto);
-            buffer = new byte[1024];
-           servidor = InetAddress.getByName(direccionHost);
-           this.serverPort=serverPort;
-           
-            
-     }
-     
-     
-     public  String send(String mensaje) throws IOException{ 
-         String centinela="";
-         byte[] m =mensaje.getBytes(); //args[0].getBytes();
-         DatagramPacket request = new DatagramPacket(m, mensaje.length(), servidor, serverPort);
-         socket.send(request);
-         DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+
+    private DatagramSocket socket;
+    private byte[] buffer;
+    private InetAddress servidor;
+    int serverPort;
+
+    public UDPClient(String direccionHost, int serverPort) throws SocketException, UnknownHostException {
+        socket = new DatagramSocket();
+        //socket.setSoTimeout(puerto);
+        buffer = new byte[1024];
+        servidor = InetAddress.getByName(direccionHost);
+        this.serverPort = serverPort;
+
+    }
+
+    public UDPClient(String direccionHost, int serverPort, int timeout) throws SocketException, UnknownHostException {
+        socket = new DatagramSocket();
+        socket.setSoTimeout(timeout);
+        //socket.setSoTimeout(puerto);
+        buffer = new byte[1024];
+        servidor = InetAddress.getByName(direccionHost);
+        this.serverPort = serverPort;
+
+    }
+
+    public String send(String mensaje) throws IOException {
+        String centinela = "";
+        byte[] m = mensaje.getBytes(); //args[0].getBytes();
+        DatagramPacket request = new DatagramPacket(m, mensaje.length(), servidor, serverPort);
+        socket.send(request);
+        DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
         socket.receive(reply);
-        centinela= new String(reply.getData());
-        System.out.println("Reply: " +centinela);
+        centinela = new String(reply.getData());
+        System.out.println("Reply: " + centinela);
         return centinela;
-           
-     }
-     
-     public  String send(Mensaje mensaje) throws IOException{ 
-         String centinela="";
-         
-           
-           ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-           ObjectOutputStream os = new ObjectOutputStream(outputStream);
-           os.writeObject(mensaje);
-           byte[] data = outputStream.toByteArray();
-           DatagramPacket request = new DatagramPacket(data, data.length, servidor, serverPort);
-         socket.send(request);
-         DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+
+    }
+
+    public String send(Mensaje mensaje) throws IOException {
+        String centinela = "";
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(outputStream);
+        os.writeObject(mensaje);
+        byte[] data = outputStream.toByteArray();
+        DatagramPacket request = new DatagramPacket(data, data.length, servidor, serverPort);
+        socket.send(request);
+        DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
         socket.receive(reply);
-        centinela= new String(reply.getData());
-        System.out.println("Reply: " +centinela);
+        centinela = new String(reply.getData());
+        System.out.println("Reply: " + centinela);
         return centinela;
-           
-     }
-     
-     private void close(){
-         this.socket.close();
-     }
+
+    }
+
+    private void close() {
+        this.socket.close();
+    }
 
     public DatagramSocket getSocket() {
         return socket;
     }
-    
-      public static HashMap<Integer, String> direcciones;
-      
-     static{
-          direcciones = new HashMap();
-     
+
+    public static HashMap<Integer, String> direcciones;
+
+    static {
+        direcciones = new HashMap();
+
 //            direcciones.put(1, "192.168.19.140");
 //            direcciones.put(2, "192.168.19.140");
 //            direcciones.put(3, "192.168.19.91");
@@ -101,14 +96,13 @@ public class UDPClient {
 //            direcciones.put(5, "192.168.16.173");
 //            direcciones.put(6, "192.168.16.173");
 //        
-            direcciones.put(1, "localhost");
-            direcciones.put(2, "localhost");
-            direcciones.put(3, "localhost");
-            direcciones.put(4, "localhost");
-            direcciones.put(5, "localhost");
-            direcciones.put(6, "localhost");
-       
+        direcciones.put(1, "localhost");
+        direcciones.put(2, "localhost");
+        direcciones.put(3, "localhost");
+        direcciones.put(4, "localhost");
+        direcciones.put(5, "localhost");
+        direcciones.put(6, "localhost");
 
-     }
-     
+    }
+
 }

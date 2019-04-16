@@ -162,16 +162,8 @@ public class CentralizadoMutex implements MensajeListen {
             btnRegionCriticaGinna.setEnabled(false);
             lblBloqueoCtaGinna.setText("EN USO POR EL PROCESO:" + Integer.toString(mensaje.getK()));
 
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-
-                    try {
-                        Thread.sleep(15000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-
-                    lblBloqueoCtaGinna.setEnabled(true);
+             ActionListener taskPerformer = (ActionEvent ae) -> {
+               lblBloqueoCtaGinna.setEnabled(true);
                     btnRegionCriticaGinna.setEnabled(true);
                     lblBloqueoCtaGinna.setText("LIBERADO");
                     regionCriticaGinnaEnUso = false;
@@ -191,9 +183,44 @@ public class CentralizadoMutex implements MensajeListen {
                             Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-
-                }
-            });
+            };
+            Timer timer = new Timer(10000, taskPerformer);
+            timer.setRepeats(false);
+            timer.start();
+            
+            
+//            SwingUtilities.invokeLater(new Runnable() {
+//                public void run() {
+//
+//                    try {
+//                        Thread.sleep(15000);
+//                    } catch (InterruptedException ex) {
+//                        Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//
+//                    lblBloqueoCtaGinna.setEnabled(true);
+//                    btnRegionCriticaGinna.setEnabled(true);
+//                    lblBloqueoCtaGinna.setText("LIBERADO");
+//                    regionCriticaGinnaEnUso = false;
+//                    saldoGinna--;
+//                    lblSaldoGinna.setText(String.format("Saldo: $%f", saldoGinna));
+//                    try {
+//                        enviarRespuesta(mensaje);
+//                    } catch (IOException ex) {
+//                        Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                    colaPeticionesRegionCriticaGinna.remove(mensaje);
+//                    UtilsAlgoritmos.actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaGinna);
+//                    for (Mensaje m : colaPeticionesRegionCriticaGinna) {
+//                        try {
+//                            recibirMensajeRegionCriticaGinna(m);
+//                        } catch (InterruptedException ex) {
+//                            Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
+//                        }
+//                    }
+//
+//                }
+//            });
 
         }
 
@@ -205,7 +232,7 @@ public class CentralizadoMutex implements MensajeListen {
         //Region critica cuenta de Ginna
         if (regionCriticaIsmaelEnUso) {
             //this.colaPeticionesRegionCriticaGinna.add(mensaje);
-            UtilsAlgoritmos.actualizaLista(listColaPeticionesGinna, colaPeticionesRegionCriticaIsmael);
+            UtilsAlgoritmos.actualizaLista(listColaPeticionesIsmael, colaPeticionesRegionCriticaIsmael);
 
         } else {
             regionCriticaIsmaelEnUso = true;
@@ -213,16 +240,8 @@ public class CentralizadoMutex implements MensajeListen {
             btnRegionCriticaIsmael.setEnabled(false);
             lblBloqueoCtaIsmael.setText("EN USO POR EL PROCESO:" + Integer.toString(mensaje.getK()));
 
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-
-                    try {
-                        Thread.sleep(15000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-
-                    lblBloqueoCtaIsmael.setEnabled(true);
+              ActionListener taskPerformer = (ActionEvent ae) -> {
+              lblBloqueoCtaIsmael.setEnabled(true);
                     btnRegionCriticaIsmael.setEnabled(true);
                     lblBloqueoCtaIsmael.setText("LIBERADO");
                     regionCriticaIsmaelEnUso = false;
@@ -238,9 +257,39 @@ public class CentralizadoMutex implements MensajeListen {
                     for (Mensaje m : colaPeticionesRegionCriticaIsmael) {
                         recibirMensajesRegionCriticaIsmael(m);
                     }
-
-                }
-            });
+            };
+            Timer timer = new Timer(10000, taskPerformer);
+            timer.setRepeats(false);
+            timer.start();
+            
+//            SwingUtilities.invokeLater(new Runnable() {
+//                public void run() {
+//
+//                    try {
+//                        Thread.sleep(15000);
+//                    } catch (InterruptedException ex) {
+//                        Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//
+//                    lblBloqueoCtaIsmael.setEnabled(true);
+//                    btnRegionCriticaIsmael.setEnabled(true);
+//                    lblBloqueoCtaIsmael.setText("LIBERADO");
+//                    regionCriticaIsmaelEnUso = false;
+//                    saldoIsmael--;
+//                    lblSaldoIsmael.setText(String.format("Saldo: $%f", saldoIsmael));
+//                    try {
+//                        enviarRespuesta(mensaje);
+//                    } catch (IOException ex) {
+//                        Logger.getLogger(CentralizadoMutex.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                    colaPeticionesRegionCriticaIsmael.remove(mensaje);
+//                    UtilsAlgoritmos.actualizaLista(listColaPeticionesIsmael, colaPeticionesRegionCriticaIsmael);
+//                    for (Mensaje m : colaPeticionesRegionCriticaIsmael) {
+//                        recibirMensajesRegionCriticaIsmael(m);
+//                    }
+//
+//                }
+//            });
 
         }
     }
